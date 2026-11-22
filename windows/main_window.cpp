@@ -1104,6 +1104,7 @@ MainWindow::MainWindow(
     if (mode_ == PlayerMode::Video)
     {
         auto* menu_host = new QWidget(this);
+        menu_host->setObjectName(QStringLiteral("legacyMenuHost"));
         auto* menu_host_layout = new QVBoxLayout(menu_host);
         menu_host_layout->setContentsMargins(0, 0, 0, 0);
         menu_host_layout->setSpacing(0);
@@ -1187,6 +1188,7 @@ MainWindow::MainWindow(
     }
 
     auto* content = new QWidget(this);
+    content->setObjectName(QStringLiteral("centralContent"));
     auto* layout = new QVBoxLayout(content);
     if (mode_ == PlayerMode::Video)
         layout->setContentsMargins(0, 0, 0, 0);
