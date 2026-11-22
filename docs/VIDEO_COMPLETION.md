@@ -1218,3 +1218,10 @@ Windows UI 的正式完成条件统一由 [`docs/WINDOWS_UI_ACCEPTANCE.md`](WIND
 - [x] 新增源文件由现有 `aux_source_directory()` 自动收集。
 - [ ] Windows/MSVC 构建与运行回归尚未执行。
 - [ ] `0xC00000FD` 尚无异常现场调用堆栈，根因未确认。Matroska 未知 Attachment、字幕字体回退、Opus 时间戳提示暂不能认定为崩溃原因。
+
+
+### 2026-11-22 — 合并过细的实现文件
+
+- [x] 将窗口事件并回 `main_window.cpp`，将播放列表、播放控制和字幕逻辑合并为 `main_window_media.cpp`。
+- [x] Windows 实现保持为四个主要实现文件：`main_window.cpp`、`main_window_media.cpp`、`main_window_video.cpp`、`main_window_settings.cpp`。
+- [ ] Windows/MSVC 构建和运行回归尚未执行。

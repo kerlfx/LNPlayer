@@ -385,3 +385,9 @@
 - [x] 按职责拆分 MainWindow 实现文件，保持现有类状态和调用接口。
 - [ ] Windows/MSVC 构建、播放与退出回归待执行。
 - [ ] `0xC00000FD` 需 Visual Studio 异常现场 Call Stack 确认；未确认前不调整 FFmpeg 探测参数或修改 Qt 事件行为。
+
+
+## 2026-11-22 — 实现文件规模调整
+
+- [x] 避免按每个小职责创建独立 `.cpp`；窗口事件并入主窗口文件，媒体管理、播放控制和字幕合并为 `main_window_media.cpp`。
+- [ ] Windows/MSVC 编译及播放回归待执行。
