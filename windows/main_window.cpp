@@ -1266,7 +1266,6 @@ MainWindow::MainWindow(
         playlist_widget_->setContextMenuPolicy(Qt::CustomContextMenu);
         playlist_widget_->setDefaultDropAction(Qt::MoveAction);
         playlist_panel_ = new QWidget(video_surface_);
-        playlist_panel_->setAttribute(Qt::WA_NativeWindow);
         playlist_panel_->setAutoFillBackground(true);
         playlist_panel_->setObjectName(QStringLiteral("playlistOverlay"));
         playlist_panel_->setFixedWidth(320);
@@ -1916,7 +1915,7 @@ MainWindow::MainWindow(
     }
     volume_slider_->setMaximumWidth(160);
 
-    control_panel_ = new QWidget(content);
+    control_panel_ = new QWidget(video_surface_);
     control_panel_->setAutoFillBackground(false);
     control_panel_->setObjectName(QStringLiteral("controlPanel"));
     control_panel_->setMouseTracking(true);
@@ -2068,10 +2067,10 @@ MainWindow::MainWindow(
     setCentralWidget(content);
     if (mode_ == PlayerMode::Video)
     {
-        control_panel_->setParent(content);
+        control_panel_->setParent(video_surface_);
         control_panel_->setSizePolicy(QSizePolicy::Expanding, QSizePolicy::Fixed);
-        control_panel_->setMinimumHeight(control_panel_->sizeHint().height());
-        layout->addWidget(control_panel_);
+        control_panel_->setFixedHeight(control_panel_->sizeHint().height());
+        updateVideoOverlayGeometry();
         control_panel_->show();
     }
     if (menu_bar_)
@@ -2081,9 +2080,8 @@ MainWindow::MainWindow(
     }
     if (title_bar_)
     {
-        title_bar_->setParent(content);
-        title_bar_->setAttribute(Qt::WA_NativeWindow);
-        title_bar_->setGeometry(0, 0, content->width(), title_bar_->sizeHint().height());
+        title_bar_->setParent(video_surface_);
+        title_bar_->setGeometry(0, 0, video_surface_->width(), title_bar_->sizeHint().height());
         title_bar_->hide();
         title_bar_->raise();
     }
@@ -2098,6 +2096,8 @@ MainWindow::MainWindow(
             title_bar_->hide();
         if (playlist_panel_)
             playlist_panel_->hide();
+        if (control_panel_)
+            control_panel_->hide();
         if (isFullScreen())
             setCursor(Qt::BlankCursor);
     });
@@ -2237,6 +2237,12 @@ MainWindow::MainWindow(
         update_shortcut_availability(nullptr, QApplication::focusWidget());
     }
     statusBar()->showMessage(QStringLiteral("正在初始化播放器"));
+    if (mode_ == PlayerMode::Video)
+    {
+        updateVideoOverlayGeometry();
+        if (fullscreen_hide_delay_ms_ > 0)
+            fullscreen_hide_timer_->start(fullscreen_hide_delay_ms_);
+    }
 
     const uint32_t initial_volume = static_cast<uint32_t>(volume_slider_->value());
     const float initial_playback_rate = playback_rate_;
@@ -2815,6 +2821,31 @@ void MainWindow::fitWindowToVideoAspect(
         move(adjusted_position);
 }
 
+void MainWindow::updateVideoOverlayGeometry()
+{
+    if (!video_surface_)
+        return;
+
+    const int surface_width = video_surface_->width();
+    const int surface_height = video_surface_->height();
+
+    if (title_bar_)
+        title_bar_->setGeometry(0, 0, surface_width, title_bar_->sizeHint().height());
+
+    if (playlist_panel_)
+        playlist_panel_->setGeometry(
+            std::max(0, surface_width - playlist_panel_->width()),
+            0, playlist_panel_->width(), surface_height);
+
+    if (control_panel_)
+    {
+        const int panel_height = control_panel_->sizeHint().height();
+        control_panel_->setGeometry(
+            0, std::max(0, surface_height - panel_height),
+            surface_width, panel_height);
+    }
+}
+
 void MainWindow::updateFullscreenUi()
 {
     fullscreen_hide_timer_->stop();
@@ -2841,6 +2872,8 @@ void MainWindow::updateFullscreenUi()
         title_bar_->hide();
     if (playlist_panel_)
         playlist_panel_->hide();
+    if (control_panel_)
+        control_panel_->hide();
     unsetCursor();
 }
 
@@ -2909,13 +2942,13 @@ bool MainWindow::eventFilter(QObject* watched, QEvent* event)
         {
             if (osd_label_ && osd_label_->isVisible())
                 positionOsd();
+            updateVideoOverlayGeometry();
             if (playlist_panel_ && playlist_panel_->isVisible())
-            {
-                playlist_panel_->setGeometry(
-                    std::max(0, video_surface_->width() - playlist_panel_->width()),
-                    0, playlist_panel_->width(), video_surface_->height());
                 playlist_panel_->raise();
-            }
+            if (title_bar_ && title_bar_->isVisible())
+                title_bar_->raise();
+            if (control_panel_ && control_panel_->isVisible())
+                control_panel_->raise();
         }
         if (event->type() == QEvent::Show && is_menu_widget)
         {
@@ -2949,15 +2982,25 @@ bool MainWindow::eventFilter(QObject* watched, QEvent* event)
                     else
                         fullscreen_hide_timer_->stop();
                 }
-                else if (playlist_panel_visible_ && playlist_panel_ &&
+                if (playlist_panel_visible_ && playlist_panel_ &&
                     position.x() >= video_surface_->width() - edge_height)
                 {
                     unsetCursor();
-                    playlist_panel_->setGeometry(
-                        std::max(0, video_surface_->width() - playlist_panel_->width()),
-                        0, playlist_panel_->width(), video_surface_->height());
+                    updateVideoOverlayGeometry();
                     playlist_panel_->show();
                     playlist_panel_->raise();
+                    if (fullscreen_hide_delay_ms_ > 0)
+                        fullscreen_hide_timer_->start(fullscreen_hide_delay_ms_);
+                    else
+                        fullscreen_hide_timer_->stop();
+                }
+                if (control_panel_ &&
+                    position.y() >= video_surface_->height() - edge_height)
+                {
+                    unsetCursor();
+                    updateVideoOverlayGeometry();
+                    control_panel_->show();
+                    control_panel_->raise();
                     if (fullscreen_hide_delay_ms_ > 0)
                         fullscreen_hide_timer_->start(fullscreen_hide_delay_ms_);
                     else
@@ -3022,20 +3065,13 @@ void MainWindow::resizeEvent(QResizeEvent* event)
     QMainWindow::resizeEvent(event);
     if (mode_ == PlayerMode::Video)
     {
+        updateVideoOverlayGeometry();
         if (playlist_panel_ && playlist_panel_->isVisible())
-        {
-            playlist_panel_->setGeometry(
-                std::max(0, video_surface_->width() - playlist_panel_->width()),
-                0, playlist_panel_->width(), video_surface_->height());
             playlist_panel_->raise();
-        }
-        if (title_bar_)
-        {
-            title_bar_->setGeometry(0, 0, centralWidget()->width(),
-                title_bar_->sizeHint().height());
-            if (title_bar_->isVisible())
-                title_bar_->raise();
-        }
+        if (title_bar_ && title_bar_->isVisible())
+            title_bar_->raise();
+        if (control_panel_ && control_panel_->isVisible())
+            control_panel_->raise();
     }
     if (!isFullScreen() && !isMinimized())
         normal_geometry_ = saveGeometry();
@@ -3085,8 +3121,11 @@ bool MainWindow::nativeEvent(
                 return true;
             }
         }
+        const QRect title_bar_rect = title_bar_
+            ? QRect(title_bar_->mapTo(this, QPoint(0, 0)), title_bar_->size())
+            : QRect();
         if (title_bar_ && title_bar_->isVisible() &&
-            title_bar_->geometry().contains(position))
+            title_bar_rect.contains(position))
         {
             for (QWidget* child = childAt(position);
                 child && child != title_bar_; child = child->parentWidget())
