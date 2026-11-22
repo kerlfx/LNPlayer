@@ -2473,7 +2473,15 @@ MainWindow::MainWindow(
 MainWindow::~MainWindow()
 {
     qInfo() << "[Shutdown] MainWindow destructor entered";
+    qInfo() << "[Shutdown] Removing child event filters";
+    const auto descendants = findChildren<QObject*>();
+    for (QObject* object : descendants)
+        object->removeEventFilter(this);
+    qInfo() << "[Shutdown] Child event filters removed";
+
     volume_settings_timer_->stop();
+    fullscreen_hide_timer_->stop();
+    osd_timer_->stop();
     {
         QSettings settings(settings_file_path(), QSettings::IniFormat);
         settings.setValue(QStringLiteral("Playback/Volume"), volume_slider_->value());
