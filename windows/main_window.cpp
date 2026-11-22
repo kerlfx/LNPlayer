@@ -2085,6 +2085,11 @@ MainWindow::MainWindow(
     }
     if (title_bar_)
     {
+        if (QWidget* previous_parent = title_bar_->parentWidget())
+        {
+            if (QLayout* previous_layout = previous_parent->layout())
+                previous_layout->removeWidget(title_bar_);
+        }
         title_bar_->setParent(video_surface_);
         title_bar_->setAttribute(Qt::WA_NativeWindow);
         title_bar_->setGeometry(6, 6,
