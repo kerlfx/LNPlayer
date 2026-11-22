@@ -2472,6 +2472,7 @@ MainWindow::MainWindow(
 
 MainWindow::~MainWindow()
 {
+    qInfo() << "[Shutdown] MainWindow destructor entered";
     volume_settings_timer_->stop();
     {
         QSettings settings(settings_file_path(), QSettings::IniFormat);
@@ -2493,9 +2494,17 @@ MainWindow::~MainWindow()
     video_timer_->stop();
     device_timer_->stop();
 
+    qInfo() << "[Shutdown] Waiting for UI tasks";
     task_tracker_->close_and_wait();
+    qInfo() << "[Shutdown] UI tasks drained";
+
     if (lnplayer_t* player = player_.exchange(nullptr, std::memory_order_acq_rel))
-        lnplayer_destroy(player);
+    {
+        qInfo() << "[Shutdown] Destroying Core player";
+        const lnplayer_result_t result = lnplayer_destroy(player);
+        qInfo() << "[Shutdown] Core player destroyed with result:" << result;
+    }
+    qInfo() << "[Shutdown] MainWindow destructor leaving";
 }
 
 

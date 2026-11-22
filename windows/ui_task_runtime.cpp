@@ -1,5 +1,8 @@
 #include "ui_task_runtime.h"
 
+#include <chrono>
+#include <QDebug>
+
 bool UiTaskTracker::try_begin()
 {
     std::lock_guard<std::mutex> lock(mutex_);
@@ -27,10 +30,11 @@ void UiTaskTracker::close_and_wait()
 {
     std::unique_lock<std::mutex> lock(mutex_);
     accepting_.store(false, std::memory_order_release);
-    condition_.wait(lock, [this]
+    while (pending_ != 0)
     {
-        return pending_ == 0;
-    });
+        if (condition_.wait_for(lock, std::chrono::seconds(1)) == std::cv_status::timeout)
+            qWarning() << "[Shutdown] Waiting for UI tasks; pending:" << pending_;
+    }
 }
 
 UiTaskRuntime& UiTaskRuntime::instance()
@@ -51,10 +55,16 @@ UiTaskRuntime::UiTaskRuntime()
 
 UiTaskRuntime::~UiTaskRuntime()
 {
+    qInfo() << "[Shutdown] Stopping UI task runtime";
     work_guard_.reset();
     if (io_thread_.joinable())
+    {
+        qInfo() << "[Shutdown] Joining UI I/O thread";
         io_thread_.join();
+    }
+    qInfo() << "[Shutdown] Joining UI thread pool";
     thread_pool_.join();
+    qInfo() << "[Shutdown] UI task runtime stopped";
 }
 
 asio::io_context& UiTaskRuntime::io_context()

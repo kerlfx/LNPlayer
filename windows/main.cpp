@@ -3,6 +3,7 @@
 #include <QApplication>
 #include <QCommandLineOption>
 #include <QCommandLineParser>
+#include <QDebug>
 
 int main(int argc, char* argv[])
 {
@@ -33,8 +34,15 @@ int main(int argc, char* argv[])
 
     const QStringList initial_media_files = parser.positionalArguments();
 
-    MainWindow window(mode, initial_media_files);
-    window.show();
+    int exit_code = 0;
+    {
+        MainWindow window(mode, initial_media_files);
+        window.show();
 
-    return application.exec();
+        exit_code = application.exec();
+        qInfo() << "[Shutdown] QApplication::exec returned:" << exit_code;
+    }
+
+    qInfo() << "[Shutdown] MainWindow destruction completed";
+    return exit_code;
 }
