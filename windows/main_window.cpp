@@ -560,6 +560,7 @@ MainWindow::MainWindow(
         if (!geometry.isEmpty())
             restoreGeometry(geometry);
         setWindowFlag(Qt::WindowStaysOnTopHint, always_on_top_);
+        enableWindowResizeFrame();
         normal_geometry_ = saveGeometry();
     }
 
@@ -1053,6 +1054,7 @@ MainWindow::MainWindow(
             const bool was_fullscreen = isFullScreen();
             const bool was_maximized = isMaximized();
             setWindowFlag(Qt::WindowStaysOnTopHint, enabled);
+            enableWindowResizeFrame();
             if (was_fullscreen)
                 showFullScreen();
             else if (was_maximized)
@@ -1915,7 +1917,8 @@ MainWindow::MainWindow(
     }
     volume_slider_->setMaximumWidth(160);
 
-    control_panel_ = new QWidget(video_surface_);
+    control_panel_ = new QWidget(
+        mode_ == PlayerMode::Video ? video_surface_ : content);
     control_panel_->setAutoFillBackground(false);
     control_panel_->setObjectName(QStringLiteral("controlPanel"));
     control_panel_->setMouseTracking(true);
@@ -2819,6 +2822,23 @@ void MainWindow::fitWindowToVideoAspect(
         adjusted_position.y(), available.top(), std::max(available.top(), maximum_y)));
     if (adjusted_position != pos())
         move(adjusted_position);
+}
+
+void MainWindow::enableWindowResizeFrame()
+{
+#ifdef Q_OS_WIN
+    if (mode_ != PlayerMode::Video)
+        return;
+
+    const HWND window = reinterpret_cast<HWND>(static_cast<quintptr>(winId()));
+    const LONG_PTR style = GetWindowLongPtrW(window, GWL_STYLE);
+    if ((style & WS_THICKFRAME) == 0)
+    {
+        SetWindowLongPtrW(window, GWL_STYLE, style | WS_THICKFRAME);
+        SetWindowPos(window, nullptr, 0, 0, 0, 0,
+            SWP_NOMOVE | SWP_NOSIZE | SWP_NOZORDER | SWP_NOACTIVATE | SWP_FRAMECHANGED);
+    }
+#endif
 }
 
 void MainWindow::updateVideoOverlayGeometry()
