@@ -2479,6 +2479,33 @@ MainWindow::~MainWindow()
         object->removeEventFilter(this);
     qInfo() << "[Shutdown] Child event filters removed";
 
+    const auto widgets = findChildren<QWidget*>();
+    qInfo() << "[Shutdown] Tracking widget destruction order:" << widgets.size();
+    for (QWidget* widget : widgets)
+    {
+        const QString class_name = QString::fromLatin1(widget->metaObject()->className());
+        const QString object_name = widget->objectName();
+        QWidget* parent_widget = widget->parentWidget();
+        const QString parent_class = parent_widget
+            ? QString::fromLatin1(parent_widget->metaObject()->className())
+            : QStringLiteral("<none>");
+        const QString parent_name = parent_widget
+            ? parent_widget->objectName()
+            : QString();
+        int depth = 0;
+        for (QWidget* ancestor = parent_widget; ancestor; ancestor = ancestor->parentWidget())
+            ++depth;
+
+        QObject::connect(widget, &QObject::destroyed, this,
+            [class_name, object_name, parent_class, parent_name, depth]
+        {
+            qInfo().noquote() << QStringLiteral(
+                "[Shutdown] QWidget destroyed depth=%1 type=%2 name=%3 parent=%4/%5")
+                .arg(depth)
+                .arg(class_name, object_name, parent_class, parent_name);
+        });
+    }
+
     volume_settings_timer_->stop();
     fullscreen_hide_timer_->stop();
     osd_timer_->stop();
