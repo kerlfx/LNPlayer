@@ -1268,6 +1268,7 @@ MainWindow::MainWindow(
         playlist_widget_->setContextMenuPolicy(Qt::CustomContextMenu);
         playlist_widget_->setDefaultDropAction(Qt::MoveAction);
         playlist_panel_ = new QWidget(video_surface_);
+        playlist_panel_->setAttribute(Qt::WA_NativeWindow);
         playlist_panel_->setAutoFillBackground(true);
         playlist_panel_->setObjectName(QStringLiteral("playlistOverlay"));
         playlist_panel_->setFixedWidth(320);
@@ -2071,6 +2072,7 @@ MainWindow::MainWindow(
     if (mode_ == PlayerMode::Video)
     {
         control_panel_->setParent(video_surface_);
+        control_panel_->setAttribute(Qt::WA_NativeWindow);
         control_panel_->setSizePolicy(QSizePolicy::Expanding, QSizePolicy::Fixed);
         control_panel_->setFixedHeight(control_panel_->sizeHint().height());
         updateVideoOverlayGeometry();
@@ -2084,7 +2086,9 @@ MainWindow::MainWindow(
     if (title_bar_)
     {
         title_bar_->setParent(video_surface_);
-        title_bar_->setGeometry(0, 0, video_surface_->width(), title_bar_->sizeHint().height());
+        title_bar_->setAttribute(Qt::WA_NativeWindow);
+        title_bar_->setGeometry(6, 6,
+            std::max(0, video_surface_->width() - 12), title_bar_->sizeHint().height());
         title_bar_->hide();
         title_bar_->raise();
     }
@@ -2850,19 +2854,20 @@ void MainWindow::updateVideoOverlayGeometry()
     const int surface_height = video_surface_->height();
 
     if (title_bar_)
-        title_bar_->setGeometry(0, 0, surface_width, title_bar_->sizeHint().height());
+        title_bar_->setGeometry(
+            6, 6, std::max(0, surface_width - 12), title_bar_->sizeHint().height());
 
     if (playlist_panel_)
         playlist_panel_->setGeometry(
-            std::max(0, surface_width - playlist_panel_->width()),
-            0, playlist_panel_->width(), surface_height);
+            std::max(6, surface_width - playlist_panel_->width() - 6),
+            6, playlist_panel_->width(), std::max(0, surface_height - 12));
 
     if (control_panel_)
     {
         const int panel_height = control_panel_->sizeHint().height();
         control_panel_->setGeometry(
-            0, std::max(0, surface_height - panel_height),
-            surface_width, panel_height);
+            6, std::max(6, surface_height - panel_height - 6),
+            std::max(0, surface_width - 12), panel_height);
     }
 }
 
