@@ -2999,7 +2999,7 @@ bool MainWindow::eventFilter(QObject* watched, QEvent* event)
             else if (watched == video_surface_)
             {
                 const QPoint position = static_cast<QMouseEvent*>(event)->position().toPoint();
-                constexpr int edge_height = 8;
+                constexpr int edge_height = 14; // 6px resize border + 8px reveal zone
                 if (position.y() <= edge_height && title_bar_)
                 {
                     unsetCursor();
