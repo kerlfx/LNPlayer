@@ -2993,7 +2993,7 @@ bool MainWindow::eventFilter(QObject* watched, QEvent* event)
                 if (position.y() <= edge_height && title_bar_)
                 {
                     unsetCursor();
-                    title_bar_->setGeometry(0, 0, centralWidget()->width(),
+                    title_bar_->setGeometry(0, 0, video_surface_->width(),
                         title_bar_->sizeHint().height());
                     title_bar_->show();
                     title_bar_->raise();
@@ -3115,7 +3115,7 @@ bool MainWindow::nativeEvent(
         const QPoint position = mapFromGlobal(QCursor::pos());
         if (!isMaximized())
         {
-            constexpr int border = 12;
+            constexpr int border = 6;
             const bool left = position.x() < border;
             const bool right = position.x() >= width() - border;
             const bool top = position.y() < border;
