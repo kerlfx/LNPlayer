@@ -24,7 +24,7 @@
 
 namespace
 {
-constexpr int kWindowResizeBorder = 12;
+constexpr int kWindowResizeBorder = 6;
 
 LRESULT CALLBACK video_surface_subclass_proc(
     HWND window, UINT message, WPARAM wparam, LPARAM lparam,
