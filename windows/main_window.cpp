@@ -1103,12 +1103,7 @@ MainWindow::MainWindow(
 
     if (mode_ == PlayerMode::Video)
     {
-        auto* menu_host = new QWidget(this);
-        menu_host->setObjectName(QStringLiteral("legacyMenuHost"));
-        auto* menu_host_layout = new QVBoxLayout(menu_host);
-        menu_host_layout->setContentsMargins(0, 0, 0, 0);
-        menu_host_layout->setSpacing(0);
-        title_bar_ = new QWidget(menu_host);
+        title_bar_ = new QWidget(this);
         title_bar_->setObjectName(QStringLiteral("windowTitleBar"));
         title_bar_->setFixedHeight(27);
         auto* title_layout = new QHBoxLayout(title_bar_);
@@ -1152,9 +1147,8 @@ MainWindow::MainWindow(
                 showMaximized();
         });
         connect(close_button, &QPushButton::clicked, this, &QWidget::close);
-        menu_host_layout->addWidget(title_bar_);
         QMenuBar* original_menu_bar = menuBar();
-        menu_bar_ = new QMenuBar(menu_host);
+        menu_bar_ = new QMenuBar(this);
         for (QAction* action : original_menu_bar->actions())
         {
             if (QMenu* menu = action->menu())
@@ -1171,7 +1165,6 @@ MainWindow::MainWindow(
         }
         original_menu_bar->hide();
         menu_bar_->hide();
-        menu_host->hide();
         menu_bar_->installEventFilter(this);
         for (QWidget* child : menu_bar_->findChildren<QWidget*>())
         {
