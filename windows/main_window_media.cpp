@@ -101,6 +101,77 @@
 
 namespace
 {
+
+class SeekSlider final : public QSlider
+{
+public:
+    explicit SeekSlider(QWidget* parent = nullptr)
+        : QSlider(Qt::Horizontal, parent)
+    {
+    }
+
+protected:
+    void mousePressEvent(QMouseEvent* event) override
+    {
+        if (event->button() == Qt::LeftButton && !sliderHandleRect().contains(event->position().toPoint()))
+        {
+            groove_dragging_ = true;
+            setSliderDown(true);
+            setValueFromPosition(event->position().toPoint().x());
+            event->accept();
+            return;
+        }
+        QSlider::mousePressEvent(event);
+    }
+
+    void mouseMoveEvent(QMouseEvent* event) override
+    {
+        if (groove_dragging_ && (event->buttons() & Qt::LeftButton))
+        {
+            setValueFromPosition(event->position().toPoint().x());
+            event->accept();
+            return;
+        }
+        QSlider::mouseMoveEvent(event);
+    }
+
+    void mouseReleaseEvent(QMouseEvent* event) override
+    {
+        if (groove_dragging_ && event->button() == Qt::LeftButton)
+        {
+            setValueFromPosition(event->position().toPoint().x());
+            groove_dragging_ = false;
+            setSliderDown(false);
+            event->accept();
+            return;
+        }
+        QSlider::mouseReleaseEvent(event);
+    }
+
+private:
+    QRect sliderHandleRect() const
+    {
+        QStyleOptionSlider option;
+        initStyleOption(&option);
+        return style()->subControlRect(
+            QStyle::CC_Slider, &option, QStyle::SC_SliderHandle, this);
+    }
+
+    void setValueFromPosition(int x)
+    {
+        QStyleOptionSlider option;
+        initStyleOption(&option);
+        const QRect handle = style()->subControlRect(
+            QStyle::CC_Slider, &option, QStyle::SC_SliderHandle, this);
+        const int span = std::max(1, width() - handle.width());
+        const int position = std::clamp(x - handle.width() / 2, 0, span);
+        setValue(QStyle::sliderValueFromPosition(
+            minimum(), maximum(), position, span, option.upsideDown));
+    }
+
+    bool groove_dragging_ = false;
+};
+
 QString application_data_directory()
 {
     static const QString directory = []
@@ -130,6 +201,261 @@ QString application_data_directory()
     return directory;
 }
 
+QString settings_file_path()
+{
+    return QDir(application_data_directory()).filePath(
+        QStringLiteral("settings.ini"));
+}
+
+void initialize_settings_file()
+{
+    const QString target_path = settings_file_path();
+    const QString previous_ini = QDir(QStandardPaths::writableLocation(
+        QStandardPaths::AppConfigLocation)).filePath(QStringLiteral("settings.ini"));
+    if (!QFile::exists(target_path) && QFile::exists(previous_ini))
+        QFile::copy(previous_ini, target_path);
+
+    QSettings settings(target_path, QSettings::IniFormat);
+    const QString migration_key = QStringLiteral("Config/LegacySettingsMigrationCompleted");
+    if (settings.value(migration_key, false).toBool())
+        return;
+
+#ifdef Q_OS_WIN
+    QSettings legacy(
+        QSettings::NativeFormat,
+        QSettings::UserScope,
+        QStringLiteral("LNPlayer"),
+        QStringLiteral("LNPlayer"));
+    for (const QString& key : legacy.allKeys())
+    {
+        if (!settings.contains(key))
+            settings.setValue(key, legacy.value(key));
+    }
+#endif
+    settings.setValue(migration_key, true);
+    settings.sync();
+}
+
+QString format_position(int64_t position_ms)
+{
+    const int64_t total_seconds = position_ms < 0 ? 0 : position_ms / 1000;
+    const int64_t hours = total_seconds / 3600;
+    const int64_t minutes = total_seconds / 60 % 60;
+    const int64_t seconds = total_seconds % 60;
+    if (hours > 0)
+    {
+        return QStringLiteral("%1:%2:%3")
+            .arg(hours)
+            .arg(minutes, 2, 10, QLatin1Char('0'))
+            .arg(seconds, 2, 10, QLatin1Char('0'));
+    }
+    return QStringLiteral("%1:%2")
+        .arg(minutes)
+        .arg(seconds, 2, 10, QLatin1Char('0'));
+}
+
+
+void draw_subtitle_text(
+    QImage& image,
+    const QString& subtitle,
+    const QString& font_family,
+    const QString& color,
+    int font_size,
+    int vertical_position)
+{
+    if (image.isNull() || subtitle.isEmpty())
+        return;
+
+    QPainter painter(&image);
+    painter.setRenderHint(QPainter::TextAntialiasing, true);
+    QFont font(font_family);
+    font.setPixelSize(font_size > 0 ? font_size : std::max(20, image.width() / 40));
+    font.setWeight(QFont::DemiBold);
+    painter.setFont(font);
+
+    const QRect text_rect(
+        image.width() / 20,
+        image.height() * vertical_position / 100,
+        image.width() * 9 / 10,
+        image.height() / 6);
+    const int offsets[][2] = {
+        {-2, -2}, {0, -2}, {2, -2}, {-2, 0},
+        {2, 0}, {-2, 2}, {0, 2}, {2, 2}
+    };
+    painter.setPen(Qt::black);
+    for (const auto& offset : offsets)
+        painter.drawText(
+            text_rect.translated(offset[0], offset[1]),
+            Qt::AlignHCenter | Qt::AlignVCenter | Qt::TextWordWrap,
+            subtitle);
+    painter.setPen(QColor(color));
+    painter.drawText(
+        text_rect,
+        Qt::AlignHCenter | Qt::AlignVCenter | Qt::TextWordWrap,
+        subtitle);
+}
+
+void draw_subtitle_bitmap(QImage& image, const QImage& bitmap, bool fit_aspect, float aspect)
+{
+    if (image.isNull() || bitmap.isNull())
+        return;
+
+    QPainter painter(&image);
+    if (!fit_aspect)
+    {
+        painter.drawImage(image.rect(), bitmap);
+        return;
+    }
+
+    if (aspect <= 0.0f)
+        aspect = static_cast<float>(bitmap.width()) / bitmap.height();
+    int target_width = image.width();
+    int target_height = static_cast<int>(target_width / aspect);
+    if (target_height > image.height())
+    {
+        target_height = image.height();
+        target_width = static_cast<int>(target_height * aspect);
+    }
+    const QRect target(
+        (image.width() - target_width) / 2,
+        (image.height() - target_height) / 2,
+        target_width,
+        target_height);
+    painter.drawImage(target, bitmap);
+}
+
+class PlaylistItemDelegate final : public QStyledItemDelegate
+{
+public:
+    using QStyledItemDelegate::QStyledItemDelegate;
+
+    void paint(QPainter* painter, const QStyleOptionViewItem& option,
+        const QModelIndex& index) const override
+    {
+        QStyleOptionViewItem item_option(option);
+        initStyleOption(&item_option, index);
+        const QString title = item_option.text;
+        item_option.text.clear();
+        const QWidget* widget = item_option.widget;
+        QStyle* style = widget ? widget->style() : QApplication::style();
+        style->drawControl(QStyle::CE_ItemViewItem, &item_option, painter, widget);
+
+        const QRect text_rect = style->subElementRect(
+            QStyle::SE_ItemViewItemText, &item_option, widget);
+        const QColor text_color = item_option.state & QStyle::State_Selected
+            ? item_option.palette.color(QPalette::HighlightedText)
+            : item_option.palette.color(QPalette::Text);
+        painter->save();
+        painter->setPen(text_color);
+        const QFontMetrics metrics(item_option.font);
+        const QString duration = index.data(Qt::UserRole + 1).toString();
+        const QString resolution = index.data(Qt::UserRole + 2).toString();
+        const QString metadata = QStringLiteral("%1  %2").arg(duration, resolution);
+        QFont metadata_font = item_option.font;
+        metadata_font.setPointSize(std::max(8, metadata_font.pointSize() - 1));
+        const QFontMetrics metadata_metrics(metadata_font);
+        const int metadata_width = std::min(
+            text_rect.width() / 2,
+            metadata_metrics.horizontalAdvance(metadata) + 8);
+        const QRect title_rect(
+            text_rect.left(), text_rect.top(),
+            text_rect.width() - metadata_width, text_rect.height());
+        const QRect metadata_rect(
+            title_rect.right() + 4, text_rect.top(),
+            metadata_width, text_rect.height());
+        painter->drawText(title_rect, Qt::AlignVCenter | Qt::AlignLeft,
+            metrics.elidedText(title, Qt::ElideRight, title_rect.width()));
+        painter->setFont(metadata_font);
+        painter->setPen(item_option.palette.color(QPalette::Mid));
+        painter->drawText(metadata_rect, Qt::AlignVCenter | Qt::AlignRight,
+            metadata_metrics.elidedText(metadata, Qt::ElideLeft, metadata_rect.width()));
+        painter->restore();
+    }
+
+    QSize sizeHint(const QStyleOptionViewItem& option,
+        const QModelIndex& index) const override
+    {
+        QSize size = QStyledItemDelegate::sizeHint(option, index);
+        size.setHeight(std::max(size.height(), 32));
+        return size;
+    }
+};
+
+QWidget* create_playlist_header(QWidget* parent)
+{
+    auto* header = new QWidget(parent);
+    auto* layout = new QHBoxLayout(header);
+    layout->setContentsMargins(6, 2, 6, 2);
+    auto* title = new QLabel(QStringLiteral("文件名"), header);
+    auto* metadata = new QLabel(QStringLiteral("时长  ·  分辨率"), header);
+    metadata->setAlignment(Qt::AlignRight | Qt::AlignVCenter);
+    layout->addWidget(title, 1);
+    layout->addWidget(metadata);
+    header->setStyleSheet(QStringLiteral("QWidget { color: palette(mid); font-size: 11px; }"));
+    return header;
+}
+
+QStringList expand_media_urls(
+    const QList<QUrl>& urls,
+    const std::shared_ptr<UiTaskTracker>& tracker)
+{
+    const QStringList video_filters = {
+        QStringLiteral("*.mp4"), QStringLiteral("*.mkv"), QStringLiteral("*.mov"),
+        QStringLiteral("*.avi"), QStringLiteral("*.webm"), QStringLiteral("*.wmv"),
+        QStringLiteral("*.flv"), QStringLiteral("*.mpeg"), QStringLiteral("*.mpg"),
+        QStringLiteral("*.m4v"), QStringLiteral("*.ts"), QStringLiteral("*.mts"),
+        QStringLiteral("*.m2ts"), QStringLiteral("*.3gp"), QStringLiteral("*.3g2"),
+        QStringLiteral("*.vob"), QStringLiteral("*.ogv"), QStringLiteral("*.mxf"),
+        QStringLiteral("*.asf"), QStringLiteral("*.f4v"), QStringLiteral("*.divx"),
+        QStringLiteral("*.mpe"), QStringLiteral("*.mpv")
+    };
+    QStringList paths;
+    QSet<QString> unique_paths;
+    for (const QUrl& url : urls)
+    {
+        if (!tracker->accepting())
+            return paths;
+        const QString path = url.toLocalFile();
+        if (path.isEmpty())
+            continue;
+        const QFileInfo file_info(path);
+        if (file_info.isDir())
+        {
+            QDirIterator iterator(
+                file_info.absoluteFilePath(), video_filters,
+                QDir::Files | QDir::Readable, QDirIterator::Subdirectories);
+            while (iterator.hasNext() && tracker->accepting())
+            {
+                const QString candidate = QFileInfo(iterator.next()).absoluteFilePath();
+                const QString key = candidate.toCaseFolded();
+                if (!unique_paths.contains(key))
+                {
+                    unique_paths.insert(key);
+                    paths.append(candidate);
+                }
+            }
+        }
+        else if (file_info.isFile())
+        {
+            const QString candidate = file_info.absoluteFilePath();
+            const QString key = candidate.toCaseFolded();
+            if (!unique_paths.contains(key))
+            {
+                unique_paths.insert(key);
+                paths.append(candidate);
+            }
+        }
+    }
+    if (!tracker->accepting())
+        return paths;
+    std::sort(paths.begin(), paths.end(), [](const QString& left, const QString& right)
+    {
+        return left.compare(right, Qt::CaseInsensitive) < 0;
+    });
+    return paths;
+}
+
+}
 
 void MainWindow::openFile()
 {
