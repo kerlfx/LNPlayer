@@ -555,7 +555,8 @@ void MainWindow::rebuildPlaylistWidget()
         const QFileInfo file_info(path);
         auto* item = new QListWidgetItem(file_info.fileName(), playlist_widget_);
         item->setData(Qt::UserRole, path);
-        playlist_item_index_.insert(path, item);
+        playlist_item_index_.insert(
+            path, playlist_widget_->model()->index(playlist_widget_->row(item), 0));
         updatePlaylistItemMetadata(path);
         if (!playlist_video_metadata_.contains(path))
             schedulePlaylistMetadataProbe(path);
@@ -644,12 +645,17 @@ void MainWindow::updatePlaylistItemMetadata(const QString& path)
                 : QStringLiteral("未知"));
     }
 
-    for (QListWidgetItem* item : items)
+    for (const QPersistentModelIndex& item_index : items)
     {
-        item->setText(file_info.fileName());
-        item->setData(Qt::UserRole + 1, duration_text);
-        item->setData(Qt::UserRole + 2, resolution_text);
-        item->setToolTip(QStringLiteral("%1\n%2").arg(file_info.absoluteFilePath(), details));
+        if (!item_index.isValid())
+            continue;
+        playlist_widget_->model()->setData(item_index, file_info.fileName(), Qt::DisplayRole);
+        playlist_widget_->model()->setData(item_index, duration_text, Qt::UserRole + 1);
+        playlist_widget_->model()->setData(item_index, resolution_text, Qt::UserRole + 2);
+        playlist_widget_->model()->setData(
+            item_index,
+            QStringLiteral("%1\n%2").arg(file_info.absoluteFilePath(), details),
+            Qt::ToolTipRole);
     }
     playlist_widget_->viewport()->update();
 }
