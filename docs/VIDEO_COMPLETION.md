@@ -1240,7 +1240,7 @@ Windows UI 的正式完成条件统一由 [`docs/WINDOWS_UI_ACCEPTANCE.md`](WIND
 
 ### 2026-11-23 — VideoSurface 原生窗口析构路径修正
 
-- [x] 移除 `VideoSurface::~VideoSurface()` 中重复的 `RemoveWindowSubclass()` 调用。子类化回调已在 `WM_NCDESTROY` 中自行移除，不需要在析构函数再次操作 HWND。
+- [x] 第一轮修正移除了析构函数中通过 `winId()` 获取 HWND 后再调用 `RemoveWindowSubclass()` 的实现，避免析构期间意外重建原生窗口。随后审查发现回调仍可能跨越派生类析构边界，已在下一节改为使用保存的 HWND 提前解除子类化。
 - [x] 析构函数不再调用 `winId()`。父窗口销毁过程中，Qt 可能已经销毁子控件的原生窗口；此时调用 `winId()` 可能触发原生窗口重新创建，干扰 QWidget 原生窗口销毁顺序。
 - [x] 清除本轮临时 centralContent / VideoSurface 诊断输出，保留既有 MainWindow 销毁跟踪日志。
 - [ ] 该问题属于源码审查发现的生命周期风险，尚不能仅凭静态分析确认它就是 `0xC00000FD` 的唯一根因。
