@@ -68,6 +68,7 @@ private:
     QImage frame_;
     mutable std::mutex frame_mutex_;
     lnplayer::windows::D3D11VideoRenderer* renderer_ = nullptr;
+    void* native_window_ = nullptr;
     bool stretch_ = false;
     float aspect_ratio_ = 0.0f;
     float source_aspect_ratio_ = 0.0f;
