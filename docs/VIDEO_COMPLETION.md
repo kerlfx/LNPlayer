@@ -1278,3 +1278,11 @@ Windows UI 的正式完成条件统一由 [`docs/WINDOWS_UI_ACCEPTANCE.md`](WIND
 - [x] `VideoSurface` uses default destruction; member declaration order releases the RAII window-subclass helper before the renderer and before `QWidget` base teardown.
 - [ ] Remaining raw pointer-shaped values are limited to C API handles, opaque D3D/FFmpeg resource handles whose lifetime is paired with an owner, Win32 handles, and the Win32 callback-context bridge encapsulated inside `WindowSubclass`. These are non-owning API boundaries, not C++ ownership fields.
 - [ ] Static source review only; Windows/MSVC compilation and runtime shutdown tests remain outstanding.
+
+
+### 2026-11-23 — 修复进度刷新与覆盖层交互
+
+- Core 初始化成功后启动 snapshot 定时器，250ms 拉取播放快照以更新当前时间、总时长和进度条；原实现配置了定时器但遗漏启动。
+- 标题栏、播放列表侧栏、底部控制栏采用互斥显示，避免同时占据视频画面。
+- 边缘唤出范围从 14px 扩大至 48px；鼠标离开当前覆盖层后恢复自动隐藏计时，进入其他边缘时切换面板。
+- 尚未执行 Windows/MSVC 构建和运行验收。
