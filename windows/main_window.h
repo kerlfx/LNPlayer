@@ -330,7 +330,7 @@ private:
     uint64_t playlist_operation_generation_ = 0;
     QString current_media_path_;
     QPersistentModelIndex playing_playlist_item_;
-    QMultiHash<QString, QListWidgetItem*> playlist_item_index_;
+    QMultiHash<QString, QPersistentModelIndex> playlist_item_index_;
     bool playlist_open_pending_ = false;
     bool subtitles_enabled_ = true;
     int64_t subtitle_offset_ms_ = 0;
