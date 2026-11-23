@@ -1309,3 +1309,13 @@ Windows UI 的正式完成条件统一由 [`docs/WINDOWS_UI_ACCEPTANCE.md`](WIND
 - 图标设计资源与程序二进制解耦。替换外部 SVG 后，重新启动播放器即可载入新设计，无需重新编译；当前进程仍缓存首次读取的 SVG 数据。
 - 运行目录结构：`LNPlayer.exe`、`ui/player_icons.svg`。
 - 本次未执行 Windows/MSVC 构建或运行验收。
+
+
+### 2026-11-23 — 图标设计稿落地与外部加载
+
+- [x] 新增项目根目录 `ui/player_icons.svg`，重新设计播放控制、音量、音轨、字幕、播放模式、窗口与设置图标，保留既有 SVG ID，兼容现有调用接口。
+- [x] Windows 图标部署源改为项目根目录 `ui/player_icons.svg`，构建后复制到可执行文件旁的 `ui/player_icons.svg`；安装规则同步使用该目录。
+- [x] 图标继续通过外部文件加载，不嵌入 Qt Resource。
+- [ ] 需要在 Windows 重新构建并检查输出目录中的 SVG 内容，再启动播放器验收实际图标；修改 SVG 后当前进程内缓存不会自动刷新，重启播放器即可加载新文件。
+
+提交：`6753e9a35beebaa3abb9d27407e90989d357837b`（SVG 设计）；后续 CMake 与文档提交见分支历史。
