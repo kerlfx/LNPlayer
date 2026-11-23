@@ -157,12 +157,7 @@ VideoSurface::VideoSurface(QWidget* parent)
         renderer_.reset();
 }
 
-VideoSurface::~VideoSurface()
-{
-    // The subclass owns its callback context and is removed before QWidget
-    // starts native-window teardown. The renderer is released automatically.
-    window_subclass_->reset();
-}
+VideoSurface::~VideoSurface() = default;
 
 void VideoSurface::set_frame(const QImage& frame)
 {
