@@ -1275,11 +1275,16 @@ MainWindow::MainWindow(
         playlist_widget_->setDefaultDropAction(Qt::MoveAction);
         playlist_panel_ = new QWidget(video_surface_);
         playlist_panel_->setAttribute(Qt::WA_NativeWindow);
+        playlist_panel_->setAttribute(Qt::WA_StyledBackground);
+        playlist_panel_->setAttribute(Qt::WA_OpaquePaintEvent);
         playlist_panel_->setAutoFillBackground(true);
         playlist_panel_->setObjectName(QStringLiteral("playlistOverlay"));
         playlist_panel_->setFixedWidth(320);
         playlist_panel_->setStyleSheet(QStringLiteral(
             "QWidget#playlistOverlay { background: #171d27; border-left: 1px solid #354253; }"));
+        // Create the native child HWND while hidden; its first show must not
+        // coincide with lazy HWND creation or an unpainted default background.
+        (void)playlist_panel_->winId();
         playlist_panel_->hide();
         auto* playlist_panel_layout = new QVBoxLayout(playlist_panel_);
         playlist_panel_layout->setContentsMargins(0, 0, 0, 0);
@@ -2079,6 +2084,10 @@ MainWindow::MainWindow(
     {
         control_panel_->setParent(video_surface_);
         control_panel_->setAttribute(Qt::WA_NativeWindow);
+        control_panel_->setAttribute(Qt::WA_StyledBackground);
+        control_panel_->setAttribute(Qt::WA_OpaquePaintEvent);
+        control_panel_->setAutoFillBackground(true);
+        (void)control_panel_->winId();
         control_panel_->setSizePolicy(QSizePolicy::Expanding, QSizePolicy::Fixed);
         control_panel_->setFixedHeight(control_panel_->sizeHint().height());
         updateVideoOverlayGeometry();
@@ -2098,6 +2107,10 @@ MainWindow::MainWindow(
         }
         title_bar_->setParent(video_surface_);
         title_bar_->setAttribute(Qt::WA_NativeWindow);
+        title_bar_->setAttribute(Qt::WA_StyledBackground);
+        title_bar_->setAttribute(Qt::WA_OpaquePaintEvent);
+        title_bar_->setAutoFillBackground(true);
+        (void)title_bar_->winId();
         title_bar_->setGeometry(0, 0,
             video_surface_->width(), title_bar_->sizeHint().height());
         title_bar_->hide();
