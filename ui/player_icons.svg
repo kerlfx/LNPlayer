@@ -1,53 +1,59 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24">
-  <defs>
-    <style>
-      .s{fill:none;stroke:currentColor;stroke-width:1.85;stroke-linecap:round;stroke-linejoin:round}
-      .f{fill:currentColor}
-      .d{fill:currentColor;fill-opacity:.16}
-    </style>
-  </defs>
-
-  <!-- Transport: compact silhouettes, optically centered for 20–24 px controls -->
-  <g id="play"><path class="f" d="M7.15 4.35a1.45 1.45 0 0 0-2.2 1.23v12.84a1.45 1.45 0 0 0 2.2 1.23l10.2-6.42a1.45 1.45 0 0 0 0-2.46L7.15 4.35Z"/></g>
-  <g id="pause"><rect class="f" x="5" y="4" width="5.2" height="16" rx="1.65"/><rect class="f" x="13.8" y="4" width="5.2" height="16" rx="1.65"/></g>
-  <g id="stop"><rect class="f" x="4.4" y="4.4" width="15.2" height="15.2" rx="2.8"/></g>
-  <g id="previous"><path class="f" d="M5.1 4.7a1.1 1.1 0 0 1 2.2 0v14.6a1.1 1.1 0 0 1-2.2 0V4.7Zm13.15.1a1.35 1.35 0 0 1 2.05 1.15v12.1a1.35 1.35 0 0 1-2.05 1.15l-9.1-6.05a1.35 1.35 0 0 1 0-2.3l9.1-6.05Z"/></g>
-  <g id="next"><path class="f" d="M16.7 4.7a1.1 1.1 0 0 1 2.2 0v14.6a1.1 1.1 0 0 1-2.2 0V4.7ZM5.75 4.8 14.85 10.85a1.35 1.35 0 0 1 0 2.3l-9.1 6.05A1.35 1.35 0 0 1 3.7 18.05V5.95A1.35 1.35 0 0 1 5.75 4.8Z"/></g>
-
-  <!-- Sound and streams -->
-  <g id="volume"><path class="s" d="M3.5 9.2v5.6c0 .66.54 1.2 1.2 1.2h2.55l4.65 3.45c.8.6 1.9.03 1.9-.97V5.52c0-1-1.1-1.57-1.9-.97L7.25 8H4.7c-.66 0-1.2.54-1.2 1.2Z"/><path class="s" d="M16.1 9a4.35 4.35 0 0 1 0 6m2.55-8.55a7.95 7.95 0 0 1 0 11.1"/></g>
-  <g id="volume_muted"><path class="s" d="M3.5 9.2v5.6c0 .66.54 1.2 1.2 1.2h2.55l4.65 3.45c.8.6 1.9.03 1.9-.97V5.52c0-1-1.1-1.57-1.9-.97L7.25 8H4.7c-.66 0-1.2.54-1.2 1.2Z"/><path class="s" d="m16.5 9 5 6m0-6-5 6"/></g>
-  <g id="audio_track"><path class="s" d="M4 5.5h16M4 12h16M4 18.5h16"/><circle class="f" cx="9" cy="5.5" r="2.35"/><circle class="f" cx="15.2" cy="12" r="2.35"/><circle class="f" cx="8.1" cy="18.5" r="2.35"/></g>
-  <g id="subtitles"><rect class="s" x="2.8" y="4.2" width="18.4" height="15.6" rx="2.7"/><path class="s" d="M6.3 9h4.2m2.7 0h4.5M6.3 14.8h2.6m2.2 0h6.6"/></g>
-
-  <!-- Window frame -->
-  <g id="minimize"><path class="s" d="M5 17.5h14"/></g>
-  <g id="maximize"><rect class="s" x="4.1" y="4.1" width="15.8" height="15.8" rx="2.4"/></g>
-  <g id="restore"><path class="s" d="M8 4.2h11.7v11.7M5 8.1h11.7v11.7H5z"/></g>
-  <g id="close"><path class="s" d="m6.2 6.2 11.6 11.6m0-11.6L6.2 17.8"/></g>
-
-  <!-- Playlist and playback modes -->
+  <g id="play"><path fill="currentColor" d="M6.2 3.5a1.7 1.7 0 0 0-2.6 1.45v14.1a1.7 1.7 0 0 0 2.6 1.45l12-7.05a1.7 1.7 0 0 0 0-2.9L6.2 3.5Z"/></g>
+  <g id="pause"><rect fill="currentColor" x="4" y="3.2" width="5.8" height="17.6" rx="1.8"/><rect fill="currentColor" x="14.2" y="3.2" width="5.8" height="17.6" rx="1.8"/></g>
+  <g id="stop"><rect fill="currentColor" x="3.5" y="3.5" width="17" height="17" rx="2.1"/></g>
+  <g id="previous"><path fill="currentColor" d="M4 4.2a1.5 1.5 0 0 1 3 0v15.6a1.5 1.5 0 0 1-3 0V4.2Zm15.1-.7a1.5 1.5 0 0 1 2.3 1.3v14.4a1.5 1.5 0 0 1-2.3 1.3L8.4 13a1.2 1.2 0 0 1 0-2l10.7-7.5Z"/></g>
+  <g id="next"><path fill="currentColor" d="M17 4.2a1.5 1.5 0 0 1 3 0v15.6a1.5 1.5 0 0 1-3 0V4.2ZM4.9 3.5 15.6 11a1.2 1.2 0 0 1 0 2L4.9 20.5a1.5 1.5 0 0 1-2.3-1.3V4.8a1.5 1.5 0 0 1 2.3-1.3Z"/></g>
+  <g id="repeat"><path d="M3.2 9a7.7 7.7 0 0 1 13.2-4.8L19 6.8m0-4v4h-4M20.8 15a7.7 7.7 0 0 1-13.2 4.8L5 17.2m0 4v-4h4" fill="none" stroke="currentColor" stroke-width="2.7" stroke-linecap="round" stroke-linejoin="round"/></g>
+  <g id="shuffle"><path d="M3 6h2.2c5.5 0 8.1 12 13.6 12H21m-3.8-3.8L21 18l-3.8 3.8M3 18h2.2c2.1 0 3.8-1.8 5.2-3.8M13.6 9.8C15 7.8 16.7 6 18.8 6H21m-3.8-3.8L21 6l-3.8 3.8" fill="none" stroke="currentColor" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round"/></g>
+  <g id="repeat_one"><path d="M3.2 9a7.7 7.7 0 0 1 13.2-4.8L19 6.8m0-4v4h-4M20.8 15a7.7 7.7 0 0 1-13.2 4.8L5 17.2m0 4v-4h4" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"/><path d="M12 9v6m-1.7-4.3L12 9l1.7 1.7" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></g>
+  <g id="playlist"><path d="M3 5h13M3 10h10M3 15h7" fill="none" stroke="currentColor" stroke-width="2.7" stroke-linecap="round"/><path d="M14 14.2 21 18l-7 3.8v-7.6Z" fill="currentColor"/></g>
+  <g id="history"><circle cx="12" cy="12" r="9" fill="none" stroke="currentColor" stroke-width="2.5"/><path d="M12 6.5v5.8l4 2.4" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"/></g>
+  <g id="volume"><path fill="currentColor" d="M2.5 9a1.5 1.5 0 0 1 1.5-1.5h3.3l6.1-4.3a1.6 1.6 0 0 1 2.5 1.3v15a1.6 1.6 0 0 1-2.5 1.3l-6.1-4.3H4A1.5 1.5 0 0 1 2.5 15V9Z"/><path d="M17.2 8.5a5 5 0 0 1 0 7m2.6-9.5a8.5 8.5 0 0 1 0 12" fill="none" stroke="currentColor" stroke-width="2.3" stroke-linecap="round"/></g>
+  <g id="volume_muted"><path fill="currentColor" d="M2.5 9a1.5 1.5 0 0 1 1.5-1.5h3.3l6.1-4.3a1.6 1.6 0 0 1 2.5 1.3v15a1.6 1.6 0 0 1-2.5 1.3l-6.1-4.3H4A1.5 1.5 0 0 1 2.5 15V9Z"/><path d="m17.5 9 4 6m0-6-4 6" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"/></g>
+  <g id="volume_up"><path fill="currentColor" d="M2.5 9a1.5 1.5 0 0 1 1.5-1.5h3.3l6.1-4.3a1.6 1.6 0 0 1 2.5 1.3v15a1.6 1.6 0 0 1-2.5 1.3l-6.1-4.3H4A1.5 1.5 0 0 1 2.5 15V9Z"/><path d="M17 12h5m-2.5-2.5v5" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"/></g>
+  <g id="volume_down"><path fill="currentColor" d="M2.5 9a1.5 1.5 0 0 1 1.5-1.5h3.3l6.1-4.3a1.6 1.6 0 0 1 2.5 1.3v15a1.6 1.6 0 0 1-2.5 1.3l-6.1-4.3H4A1.5 1.5 0 0 1 2.5 15V9Z"/><path d="M17 12h5" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"/></g>
+  <g id="audio_effects"><path d="M3 6h18M3 12h18M3 18h18" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"/><rect fill="currentColor" x="7" y="3" width="4" height="6" rx="1.5"/><rect fill="currentColor" x="15" y="9" width="4" height="6" rx="1.5"/><rect fill="currentColor" x="5" y="15" width="4" height="6" rx="1.5"/></g>
+  <g id="subtitles"><rect fill="currentColor" x="2" y="4" width="20" height="16" rx="2.4"/><text x="12" y="15.4" text-anchor="middle" font-family="Arial,sans-serif" font-size="8.6" font-weight="800" fill="#17202d">CC</text></g>
+  <g id="audio_track"><path d="M13 3v13.5a3.8 3.8 0 1 1-2-3.3V7l10-2v9.5a3.8 3.8 0 1 1-2-3.3V3l-6 1.2Z" fill="currentColor"/></g>
+  <g id="language"><circle cx="12" cy="12" r="9.3" fill="none" stroke="currentColor" stroke-width="2.3"/><path d="M3.2 12h17.6M12 2.7c2.6 2.5 3.8 5.6 3.8 9.3s-1.2 6.8-3.8 9.3C9.4 18.8 8.2 15.7 8.2 12s1.2-6.8 3.8-9.3Z" fill="none" stroke="currentColor" stroke-width="2"/></g>
+  <g id="subtitle_list"><rect x="2.5" y="3.5" width="19" height="17" rx="1.8" fill="none" stroke="currentColor" stroke-width="2.3"/><path d="M5.5 8h7m-7 4h4m5-4h3m-3 4h3" stroke="currentColor" stroke-width="2.2" stroke-linecap="round"/><rect x="14.5" y="15" width="4.5" height="3" rx=".6" fill="currentColor"/></g>
+  <g id="audio_track_list"><path d="M3 5h18M3 11h18M3 17h11" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"/><path d="m17 14 4 4-4 4" fill="none" stroke="currentColor" stroke-width="2.3" stroke-linecap="round" stroke-linejoin="round"/></g>
+  <g id="minimize"><path d="M3 17.5h18" stroke="currentColor" stroke-width="2.8" stroke-linecap="round"/></g>
+  <g id="maximize"><rect x="3.5" y="3.5" width="14.5" height="14.5" rx="1.2" fill="none" stroke="currentColor" stroke-width="2.4"/><path d="M7 20.5h12a1.5 1.5 0 0 0 1.5-1.5V7" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round"/></g>
+  <g id="close"><path d="m4 4 16 16M20 4 4 20" stroke="currentColor" stroke-width="3" stroke-linecap="round"/></g>
+  <g id="fullscreen"><path d="M3 9V4a1 1 0 0 1 1-1h5M15 3h5a1 1 0 0 1 1 1v5M21 15v5a1 1 0 0 1-1 1h-5M9 21H4a1 1 0 0 1-1-1v-5" fill="none" stroke="currentColor" stroke-width="2.8" stroke-linecap="round"/></g>
+  <g id="exit_fullscreen"><path d="M8.5 3v5.5H3M15.5 3v5.5H21M3 15.5h5.5V21M21 15.5h-5.5V21" fill="none" stroke="currentColor" stroke-width="2.8" stroke-linecap="round" stroke-linejoin="round"/></g>
+  <g id="menu"><path d="M3 5h18M3 12h18M3 19h18" stroke="currentColor" stroke-width="2.8" stroke-linecap="round"/></g>
+  <g id="settings"><path fill="currentColor" d="m10 2 4 0 1 3.1 2.1 1.2 3-.8 2 3.5-2.1 2.3v2.4l2.1 2.3-2 3.5-3-.8-2.1 1.2L14 22h-4l-1-3.1-2.1-1.2-3 .8-2-3.5L4 12.7v-2.4L1.9 8l2-3.5 3 .8L9 4.1 10 2Z" transform="translate(1 0) scale(.92)"/><circle cx="12" cy="12" r="3" fill="#17202d"/></g>
+  <g id="about"><circle cx="12" cy="12" r="9" fill="none" stroke="currentColor" stroke-width="2.5"/><path d="M12 10.5v6m0-9v.2" stroke="currentColor" stroke-width="2.7" stroke-linecap="round"/></g>
+  <g id="help"><circle cx="12" cy="12" r="10" fill="currentColor"/><path d="M9.2 9a2.9 2.9 0 1 1 4.9 2.1c-1.3 1.2-2.1 1.5-2.1 3.1m0 3v.1" fill="none" stroke="#17202d" stroke-width="2.1" stroke-linecap="round"/></g>
+  <g id="more"><circle cx="4" cy="12" r="2.2" fill="currentColor"/><circle cx="12" cy="12" r="2.2" fill="currentColor"/><circle cx="20" cy="12" r="2.2" fill="currentColor"/></g>
+  <g id="open_file"><path d="M4 3h10l5 5v13H4z" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linejoin="round"/><path d="M14 3v5h5" fill="none" stroke="currentColor" stroke-width="2.3"/></g>
+  <g id="open_folder"><path d="M2.5 6a2 2 0 0 1 2-2h5l2 2h8a2 2 0 0 1 2 2v10a2 2 0 0 1-2 2h-15a2 2 0 0 1-2-2V6Z" fill="currentColor"/><path d="M12 10v7m-3.5-3.5h7" stroke="#17202d" stroke-width="2.2" stroke-linecap="round"/></g>
+  <g id="download"><path d="M12 2.5v13m-5-5 5 5 5-5M4 20h16" fill="none" stroke="currentColor" stroke-width="2.8" stroke-linecap="round" stroke-linejoin="round"/></g>
+  <g id="delete"><path d="M4 6h16m-13 0 1 15h8l1-15M9 6V3h6v3m-5 4v7m4-7v7" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"/></g>
+  <g id="properties"><path d="m4 17 12-12 4 4L8 21H4v-4Z" fill="currentColor"/><path d="m14 7 4 4M3 22h18" stroke="currentColor" stroke-width="2.2" stroke-linecap="round"/></g>
+  <g id="screenshot"><path d="M4 7h3l1.5-2h7L17 7h3a1.8 1.8 0 0 1 1.8 1.8v9.4A1.8 1.8 0 0 1 20 20H4a1.8 1.8 0 0 1-1.8-1.8V8.8A1.8 1.8 0 0 1 4 7Z" fill="currentColor"/><circle cx="12" cy="13" r="4" fill="none" stroke="#17202d" stroke-width="2.1"/></g>
+  <g id="picture_in_picture"><rect x="2.5" y="3.5" width="19" height="15" rx="2" fill="none" stroke="currentColor" stroke-width="2.4"/><rect x="11" y="11" width="10" height="9" rx="1.3" fill="currentColor"/></g>
+  <g id="lock"><rect x="4" y="10" width="16" height="12" rx="2" fill="currentColor"/><path d="M7.5 10V7a4.5 4.5 0 0 1 9 0v3" fill="none" stroke="currentColor" stroke-width="2.8"/><circle cx="12" cy="15" r="1.5" fill="#17202d"/><path d="M12 16v2" stroke="#17202d" stroke-width="1.6"/></g>
+  <g id="hide"><path d="M20.5 14.5A8.8 8.8 0 0 1 9.5 3.5 9.5 9.5 0 1 0 20.5 14.5Z" fill="currentColor"/></g>
+  <g id="night_mode"><path d="M20.5 14.5A8.8 8.8 0 0 1 9.5 3.5 9.5 9.5 0 1 0 20.5 14.5Z" fill="currentColor"/><path d="M16.5 3.5v4m-2-2h4" stroke="currentColor" stroke-width="1.6" stroke-linecap="round"/></g>
+  <!-- Legacy IDs retained for settings and existing UI call sites -->
+<g id="restore"><path class="s" d="M8 4.2h11.7v11.7M5 8.1h11.7v11.7H5z"/></g>
   <g id="add"><circle class="s" cx="12" cy="12" r="8.4"/><path class="s" d="M12 7.5v9M7.5 12h9"/></g>
   <g id="remove"><circle class="s" cx="12" cy="12" r="8.4"/><path class="s" d="M7.5 12h9"/></g>
   <g id="clear"><path class="s" d="M4 7h16M9 7V4.5h6V7m-8 0 1 12.5h8L17 7m-6 3.2v5.6m3-5.6v5.6"/></g>
   <g id="move_up"><path class="s" d="M12 20V4m-6.2 6.2L12 4l6.2 6.2"/></g>
   <g id="move_down"><path class="s" d="M12 4v16m-6.2-6.2L12 20l6.2-6.2"/></g>
-  <g id="shuffle"><path class="s" d="M3.5 7h2.1c4.7 0 8.1 10 12.8 10h2.1m-3.4-3.4 3.4 3.4-3.4 3.4M3.5 17h2.1c1.9 0 3.3-1.1 4.6-2.8m3.1-4.4C14.6 8.1 16 7 18.4 7h2.1m-3.4-3.4L20.5 7l-3.4 3.4"/></g>
-  <g id="repeat"><path class="s" d="m16.7 4.3 3.6 3.4-3.6 3.4M20.3 7.7H7.2a3.7 3.7 0 0 0-3.7 3.7v.8m4.8 7.5-4.8-3.6 3.6-3.4m-3.6 3.4h13.3a3.5 3.5 0 0 0 3.5-3.5v-.8"/></g>
-  <g id="repeat_one"><path class="s" d="m16.7 4.3 3.6 3.4-3.6 3.4M20.3 7.7H7.2a3.7 3.7 0 0 0-3.7 3.7v.8m4.8 7.5-4.8-3.6 3.6-3.4m-3.6 3.4h13.3a3.5 3.5 0 0 0 3.5-3.5v-.8M12 10v5m-1.7-3.3L12 10l1.7 1.7"/></g>
-  <g id="playlist"><path class="s" d="M3.8 5.5h11.8M3.8 10.5h9.2M3.8 15.5h6.5"/><rect class="s" x="14.2" y="13.1" width="6.1" height="7.1" rx="1.2"/><path class="s" d="M16 15.5h2.5m-2.5 2h2.5"/></g>
-
-  <!-- Tools and settings -->
   <g id="search"><circle class="s" cx="10.4" cy="10.4" r="6.4"/><path class="s" d="m15.2 15.2 4.7 4.7"/></g>
-  <g id="settings"><path class="s" d="m9.4 3.5.7 1.9a7.1 7.1 0 0 1 3.8 0l.7-1.9 2.1.9-.1 2a7.5 7.5 0 0 1 2.7 2.7l2-.1.9 2.1-1.9.7a7.1 7.1 0 0 1 0 3.8l1.9.7-.9 2.1-2-.1a7.5 7.5 0 0 1-2.7 2.7l.1 2-2.1.9-.7-1.9a7.1 7.1 0 0 1-3.8 0l-.7 1.9-2.1-.9.1-2a7.5 7.5 0 0 1-2.7-2.7l-2 .1-.9-2.1 1.9-.7a7.1 7.1 0 0 1 0-3.8l-1.9-.7.9-2.1 2 .1a7.5 7.5 0 0 1 2.7-2.7l-.1-2 2.1-.9Z"/><circle class="s" cx="12" cy="12" r="2.8"/></g>
   <g id="general"><circle class="s" cx="12" cy="12" r="8.3"/><path class="s" d="M12 7.5v4.8l3 1.8"/></g>
   <g id="playback"><path class="s" d="M5 4.5v15"/><path class="f" d="M9 5.6a1.1 1.1 0 0 1 1.7-.9l8.6 5.8a1.8 1.8 0 0 1 0 3l-8.6 5.8a1.1 1.1 0 0 1-1.7-.9V5.6Z"/></g>
   <g id="interface"><rect class="s" x="3" y="4" width="18" height="16" rx="2.4"/><path class="s" d="M3.5 9h17M8 9v10.5"/></g>
   <g id="video"><rect class="s" x="2.7" y="5" width="18.6" height="14" rx="2.4"/><path class="f" d="M10 8.4a.9.9 0 0 1 1.3-.8l5.2 3.4a1.2 1.2 0 0 1 0 2l-5.2 3.4a.9.9 0 0 1-1.3-.8V8.4Z"/></g>
   <g id="filters"><path class="s" d="M4 5.5h16M4 12h16M4 18.5h16"/><circle class="f" cx="9" cy="5.5" r="2.25"/><circle class="f" cx="15.2" cy="12" r="2.25"/><circle class="f" cx="8.2" cy="18.5" r="2.25"/></g>
   <g id="keyboard"><rect class="s" x="2.6" y="5" width="18.8" height="14" rx="2.2"/><path class="s" d="M6 9h.1M9 9h.1M12 9h.1M15 9h.1M18 9h.1M6 12h.1M9 12h.1M12 12h.1M15 12h.1M18 12h.1M8 15.5h8"/></g>
-  <g id="screenshot"><path class="s" d="M7 5.2 8.5 3h7l1.5 2.2h2.5A2.5 2.5 0 0 1 22 7.7v9.8a2.5 2.5 0 0 1-2.5 2.5h-15A2.5 2.5 0 0 1 2 17.5V7.7a2.5 2.5 0 0 1 2.5-2.5H7Z"/><circle class="s" cx="12" cy="12.5" r="3.4"/></g>
   <g id="performance"><path class="s" d="M3.5 18.5a8.5 8.5 0 1 1 17 0M12 14l5-5M7.5 18.5h9"/></g>
   <g id="folder"><path class="s" d="M3 7.2a2.2 2.2 0 0 1 2.2-2.2h4.1l2 2H18.8A2.2 2.2 0 0 1 21 9.2v9.6a2.2 2.2 0 0 1-2.2 2.2H5.2A2.2 2.2 0 0 1 3 18.8V7.2Z"/></g>
   <g id="external"><path class="s" d="M13 4h7v7m0-7-9.2 9.2"/><path class="s" d="M18 13.5v3.8a2.7 2.7 0 0 1-2.7 2.7H6.7A2.7 2.7 0 0 1 4 17.3V8.7A2.7 2.7 0 0 1 6.7 6H11"/></g>
