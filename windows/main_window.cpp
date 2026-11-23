@@ -2110,12 +2110,17 @@ MainWindow::MainWindow(
     {
         if (mode_ != PlayerMode::Video)
             return;
-        if (title_bar_)
-            title_bar_->hide();
-        if (playlist_panel_)
-            playlist_panel_->hide();
-        if (control_panel_)
-            control_panel_->hide();
+        // The overlay state machine keeps at most one panel visible.
+        // Hide only that panel instead of issuing three native-window hides.
+        QWidget* active_panel = title_bar_ && title_bar_->isVisible()
+            ? title_bar_.data()
+            : playlist_panel_ && playlist_panel_->isVisible()
+                ? playlist_panel_.data()
+                : control_panel_ && control_panel_->isVisible()
+                    ? control_panel_.data()
+                    : nullptr;
+        if (active_panel)
+            active_panel->hide();
         if (isFullScreen())
             setCursor(Qt::BlankCursor);
     });
@@ -3034,15 +3039,21 @@ bool MainWindow::eventFilter(QObject* watched, QEvent* event)
             }
             else if (target_panel && target_panel != active_panel)
             {
-                if (title_bar_ && title_bar_ != target_panel)
-                    title_bar_->hide();
-                if (playlist_panel_ && playlist_panel_ != target_panel)
-                    playlist_panel_->hide();
-                if (control_panel_ && control_panel_ != target_panel)
-                    control_panel_->hide();
-
+                // Show and raise the next native overlay before hiding the
+                // previous one. This avoids briefly exposing the D3D surface
+                // between two HWND visibility changes.
                 target_panel->show();
                 target_panel->raise();
+
+                if (title_bar_ && title_bar_ != target_panel &&
+                    title_bar_->isVisible())
+                    title_bar_->hide();
+                if (playlist_panel_ && playlist_panel_ != target_panel &&
+                    playlist_panel_->isVisible())
+                    playlist_panel_->hide();
+                if (control_panel_ && control_panel_ != target_panel &&
+                    control_panel_->isVisible())
+                    control_panel_->hide();
                 if (fullscreen_hide_delay_ms_ > 0)
                     fullscreen_hide_timer_->start(fullscreen_hide_delay_ms_);
                 else
