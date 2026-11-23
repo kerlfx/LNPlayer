@@ -2897,26 +2897,28 @@ void MainWindow::updateFullscreenUi()
     {
         if (menu_bar_)
             menu_bar_->hide();
-        if (title_bar_)
-            title_bar_->hide();
         if (statusBar())
             statusBar()->hide();
     }
     else
     {
         unsetCursor();
-        if (title_bar_)
-            title_bar_->hide();
         if (statusBar())
             statusBar()->setVisible(mode_ == PlayerMode::Audio);
     }
 
-    if (title_bar_)
-        title_bar_->hide();
-    if (playlist_panel_)
-        playlist_panel_->hide();
-    if (control_panel_)
-        control_panel_->hide();
+    // Only the active overlay can be visible. Avoid hiding all three native
+    // child HWNDs during a window-state transition.
+    QWidget* active_panel = title_bar_ && title_bar_->isVisible()
+        ? title_bar_.data()
+        : playlist_panel_ && playlist_panel_->isVisible()
+            ? playlist_panel_.data()
+            : control_panel_ && control_panel_->isVisible()
+                ? control_panel_.data()
+                : nullptr;
+    if (active_panel)
+        active_panel->hide();
+
     unsetCursor();
 }
 
