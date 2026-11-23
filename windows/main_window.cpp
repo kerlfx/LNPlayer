@@ -2333,6 +2333,8 @@ MainWindow::MainWindow(
             {
                 status_label_->setText(QStringLiteral("播放器已就绪"));
                 statusBar()->showMessage(QStringLiteral("就绪"));
+                snapshot_timer_->start();
+                refreshSnapshot();
                 if (mode_ == PlayerMode::Audio)
                     refreshLibrary();
             }
@@ -2994,42 +2996,54 @@ bool MainWindow::eventFilter(QObject* watched, QEvent* event)
             else if (watched == video_surface_)
             {
                 const QPoint position = static_cast<QMouseEvent*>(event)->position().toPoint();
-                constexpr int edge_height = 14; // 6px resize border + 8px reveal zone
-                if (position.y() <= edge_height && title_bar_)
+                constexpr int reveal_zone = 48;
+                const bool near_right_edge =
+                    position.x() >= video_surface_->width() - reveal_zone;
+                const bool near_top_edge = position.y() <= reveal_zone;
+                const bool near_bottom_edge =
+                    position.y() >= video_surface_->height() - reveal_zone;
+
+                QWidget* target_panel = nullptr;
+                if (near_right_edge && playlist_panel_visible_)
+                    target_panel = playlist_panel_;
+                else if (near_top_edge)
+                    target_panel = title_bar_;
+                else if (near_bottom_edge)
+                    target_panel = control_panel_;
+
+                if (target_panel)
                 {
                     unsetCursor();
-                    title_bar_->setGeometry(0, 0, video_surface_->width(),
-                        title_bar_->sizeHint().height());
-                    title_bar_->show();
-                    title_bar_->raise();
+                    if (title_bar_ && title_bar_ != target_panel)
+                        title_bar_->hide();
+                    if (playlist_panel_ && playlist_panel_ != target_panel)
+                        playlist_panel_->hide();
+                    if (control_panel_ && control_panel_ != target_panel)
+                        control_panel_->hide();
+
+                    updateVideoOverlayGeometry();
+                    target_panel->show();
+                    target_panel->raise();
                     if (fullscreen_hide_delay_ms_ > 0)
                         fullscreen_hide_timer_->start(fullscreen_hide_delay_ms_);
                     else
                         fullscreen_hide_timer_->stop();
                 }
-                if (playlist_panel_visible_ && playlist_panel_ &&
-                    position.x() >= video_surface_->width() - edge_height)
+                else if ((title_bar_ && title_bar_->isVisible()) ||
+                         (playlist_panel_ && playlist_panel_->isVisible()) ||
+                         (control_panel_ && control_panel_->isVisible()))
                 {
-                    unsetCursor();
-                    updateVideoOverlayGeometry();
-                    playlist_panel_->show();
-                    playlist_panel_->raise();
-                    if (fullscreen_hide_delay_ms_ > 0)
+                    QWidget* cursor_widget = QApplication::widgetAt(QCursor::pos());
+                    const bool pointer_over_overlay = cursor_widget &&
+                        ((title_bar_ &&
+                            (cursor_widget == title_bar_ || title_bar_->isAncestorOf(cursor_widget))) ||
+                         (playlist_panel_ &&
+                            (cursor_widget == playlist_panel_ || playlist_panel_->isAncestorOf(cursor_widget))) ||
+                         (control_panel_ &&
+                            (cursor_widget == control_panel_ || control_panel_->isAncestorOf(cursor_widget))));
+                    if (!pointer_over_overlay && fullscreen_hide_delay_ms_ > 0 &&
+                        !fullscreen_hide_timer_->isActive())
                         fullscreen_hide_timer_->start(fullscreen_hide_delay_ms_);
-                    else
-                        fullscreen_hide_timer_->stop();
-                }
-                if (control_panel_ &&
-                    position.y() >= video_surface_->height() - edge_height)
-                {
-                    unsetCursor();
-                    updateVideoOverlayGeometry();
-                    control_panel_->show();
-                    control_panel_->raise();
-                    if (fullscreen_hide_delay_ms_ > 0)
-                        fullscreen_hide_timer_->start(fullscreen_hide_delay_ms_);
-                    else
-                        fullscreen_hide_timer_->stop();
                 }
             }
         }
