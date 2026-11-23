@@ -26,7 +26,7 @@ set_target_properties(LNPlayerApp PROPERTIES
 )
 
 # Keep player UI artwork external so designers can iterate without rebuilding.
-set(LNPLAYER_UI_ASSET_DIR "${CMAKE_CURRENT_SOURCE_DIR}/resources")
+set(LNPLAYER_UI_ASSET_DIR "${CMAKE_CURRENT_SOURCE_DIR}/../ui")
 add_custom_command(TARGET LNPlayerApp POST_BUILD
     COMMAND "${CMAKE_COMMAND}" -E make_directory
         "$<TARGET_FILE_DIR:LNPlayerApp>/ui"
