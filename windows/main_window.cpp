@@ -2552,38 +2552,6 @@ MainWindow::~MainWindow()
         const lnplayer_result_t result = lnplayer_destroy(player);
         qInfo() << "[Shutdown] Core player destroyed with result:" << result;
     }
-    if (QWidget* central = centralWidget())
-    {
-        qInfo() << "[Shutdown] centralContent pointer:" << central
-                << "layout:" << central->layout()
-                << "layoutType:" << (central->layout()
-                    ? central->layout()->metaObject()->className() : "<none>");
-        for (QObject* child : central->children())
-        {
-            const QWidget* child_widget = qobject_cast<QWidget*>(child);
-            qInfo() << "[Shutdown] centralContent child:"
-                    << child
-                    << child->metaObject()->className()
-                    << child->objectName()
-                    << "widget:" << child_widget
-                    << "layout:" << (child_widget ? child_widget->layout() : nullptr);
-        }
-        if (QLayout* central_layout = central->layout())
-        {
-            qInfo() << "[Shutdown] centralContent layout item count:"
-                    << central_layout->count();
-            for (int index = 0; index < central_layout->count(); ++index)
-            {
-                QLayoutItem* item = central_layout->itemAt(index);
-                QWidget* item_widget = item ? item->widget() : nullptr;
-                qInfo() << "[Shutdown] centralContent layout item:"
-                        << index << item
-                        << "widget:" << item_widget
-                        << "type:" << (item_widget
-                            ? item_widget->metaObject()->className() : "<layout/spacer>");
-            }
-        }
-    }
     qInfo() << "[Shutdown] MainWindow destructor leaving";
 }
 
