@@ -1245,3 +1245,10 @@ Windows UI 的正式完成条件统一由 [`docs/WINDOWS_UI_ACCEPTANCE.md`](WIND
 - [x] 清除本轮临时 centralContent / VideoSurface 诊断输出，保留既有 MainWindow 销毁跟踪日志。
 - [ ] 该问题属于源码审查发现的生命周期风险，尚不能仅凭静态分析确认它就是 `0xC00000FD` 的唯一根因。
 - [ ] 需要 Windows/MSVC 重新构建并反复关闭窗口验证；未运行构建、CTest 或 CI。
+
+### 2026-11-23 — Remove VideoSurface window callback before base teardown
+
+- Store the HWND used to install the `SetWindowSubclass` callback; do not reacquire it with `winId()` during destruction.
+- Remove the subclass in `VideoSurface::~VideoSurface()` before `QWidget` base teardown begins, preventing the callback's raw `VideoSurface*` reference from outliving the derived object.
+- Keep the `WM_NCDESTROY` self-removal path for native-window destruction that occurs while the widget is still alive.
+- Windows/MSVC build and shutdown validation are still required.
