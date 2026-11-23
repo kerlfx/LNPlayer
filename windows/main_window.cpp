@@ -3013,47 +3013,37 @@ bool MainWindow::eventFilter(QObject* watched, QEvent* event)
                 const bool near_bottom_edge =
                     position.y() >= video_surface_->height() - reveal_zone;
 
-                QWidget* target_panel = nullptr;
-                if (near_right_edge && playlist_panel_visible_)
-                    target_panel = playlist_panel_;
-                else if (near_top_edge)
-                    target_panel = title_bar_;
-                else if (near_bottom_edge)
-                    target_panel = control_panel_;
+                const bool title_panel_visible = title_bar_ && title_bar_->isVisible();
+                const bool playlist_panel_is_visible =
+                    playlist_panel_ && playlist_panel_->isVisible();
+                const bool control_panel_visible =
+                    control_panel_ && control_panel_->isVisible();
+                const bool has_visible_overlay =
+                    title_panel_visible || playlist_panel_is_visible || control_panel_visible;
 
-                if (target_panel)
+                // An active overlay owns the reveal interaction until it hides.
+                // Moving across another edge must not switch panels or stack overlays.
+                if (!has_visible_overlay)
                 {
-                    unsetCursor();
-                    if (title_bar_ && title_bar_ != target_panel)
-                        title_bar_->hide();
-                    if (playlist_panel_ && playlist_panel_ != target_panel)
-                        playlist_panel_->hide();
-                    if (control_panel_ && control_panel_ != target_panel)
-                        control_panel_->hide();
+                    QWidget* target_panel = nullptr;
+                    if (near_right_edge && playlist_panel_visible_)
+                        target_panel = playlist_panel_;
+                    else if (near_top_edge)
+                        target_panel = title_bar_;
+                    else if (near_bottom_edge)
+                        target_panel = control_panel_;
 
-                    updateVideoOverlayGeometry();
-                    target_panel->show();
-                    target_panel->raise();
-                    if (fullscreen_hide_delay_ms_ > 0)
-                        fullscreen_hide_timer_->start(fullscreen_hide_delay_ms_);
-                    else
-                        fullscreen_hide_timer_->stop();
-                }
-                else if ((title_bar_ && title_bar_->isVisible()) ||
-                         (playlist_panel_ && playlist_panel_->isVisible()) ||
-                         (control_panel_ && control_panel_->isVisible()))
-                {
-                    QWidget* cursor_widget = QApplication::widgetAt(QCursor::pos());
-                    const bool pointer_over_overlay = cursor_widget &&
-                        ((title_bar_ &&
-                            (cursor_widget == title_bar_ || title_bar_->isAncestorOf(cursor_widget))) ||
-                         (playlist_panel_ &&
-                            (cursor_widget == playlist_panel_ || playlist_panel_->isAncestorOf(cursor_widget))) ||
-                         (control_panel_ &&
-                            (cursor_widget == control_panel_ || control_panel_->isAncestorOf(cursor_widget))));
-                    if (!pointer_over_overlay && fullscreen_hide_delay_ms_ > 0 &&
-                        !fullscreen_hide_timer_->isActive())
-                        fullscreen_hide_timer_->start(fullscreen_hide_delay_ms_);
+                    if (target_panel)
+                    {
+                        unsetCursor();
+                        updateVideoOverlayGeometry();
+                        target_panel->show();
+                        target_panel->raise();
+                        if (fullscreen_hide_delay_ms_ > 0)
+                            fullscreen_hide_timer_->start(fullscreen_hide_delay_ms_);
+                        else
+                            fullscreen_hide_timer_->stop();
+                    }
                 }
             }
         }
