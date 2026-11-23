@@ -7,12 +7,6 @@ qt_add_executable(LNPlayerApp WIN32
     ${LNPLAYER_WINDOWS_SOURCES}
 )
 
-qt_add_resources(LNPlayerApp player_icons
-    PREFIX "/icons"
-    BASE "${CMAKE_CURRENT_SOURCE_DIR}/resources"
-    FILES "${CMAKE_CURRENT_SOURCE_DIR}/resources/player_icons.svg"
-)
-
 target_include_directories(LNPlayerApp PRIVATE "${ASIO_INCLUDE_DIR}")
 target_compile_definitions(LNPlayerApp PRIVATE ASIO_STANDALONE)
 
@@ -29,6 +23,18 @@ target_link_libraries(LNPlayerApp
 
 set_target_properties(LNPlayerApp PROPERTIES
     OUTPUT_NAME "LNPlayer"
+)
+
+# Keep player UI artwork external so designers can iterate without rebuilding.
+set(LNPLAYER_UI_ASSET_DIR "${CMAKE_CURRENT_SOURCE_DIR}/resources")
+add_custom_command(TARGET LNPlayerApp POST_BUILD
+    COMMAND "${CMAKE_COMMAND}" -E make_directory
+        "$<TARGET_FILE_DIR:LNPlayerApp>/ui"
+    COMMAND "${CMAKE_COMMAND}" -E copy_if_different
+        "${LNPLAYER_UI_ASSET_DIR}/player_icons.svg"
+        "$<TARGET_FILE_DIR:LNPlayerApp>/ui/player_icons.svg"
+    COMMENT "Deploying external player UI artwork"
+    VERBATIM
 )
 
 configure_file(
@@ -66,6 +72,7 @@ install(TARGETS LNPlayerApp lnplayer
     RUNTIME DESTINATION .
     LIBRARY DESTINATION .
 )
+install(FILES "${LNPLAYER_UI_ASSET_DIR}/player_icons.svg" DESTINATION ui)
 
 if(LNPLAYER_FFMPEG_DLLS)
     install(FILES ${LNPLAYER_FFMPEG_DLLS} DESTINATION .)
