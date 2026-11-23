@@ -22,7 +22,7 @@
   <g id="language"><circle cx="12" cy="12" r="9.3" fill="none" stroke="currentColor" stroke-width="2.3"/><path d="M3.2 12h17.6M12 2.7c2.6 2.5 3.8 5.6 3.8 9.3s-1.2 6.8-3.8 9.3C9.4 18.8 8.2 15.7 8.2 12s1.2-6.8 3.8-9.3Z" fill="none" stroke="currentColor" stroke-width="2"/></g>
   <g id="subtitle_list"><rect x="2.5" y="3.5" width="19" height="17" rx="1.8" fill="none" stroke="currentColor" stroke-width="2.3"/><path d="M5.5 8h7m-7 4h4m5-4h3m-3 4h3" stroke="currentColor" stroke-width="2.2" stroke-linecap="round"/><rect x="14.5" y="15" width="4.5" height="3" rx=".6" fill="currentColor"/></g>
   <g id="audio_track_list"><path d="M3 5h18M3 11h18M3 17h11" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"/><path d="m17 14 4 4-4 4" fill="none" stroke="currentColor" stroke-width="2.3" stroke-linecap="round" stroke-linejoin="round"/></g>
-  <g id="minimize"><path d="M6 17.5h12" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/></g>
+  <g id="minimize"><path d="M5 18h14" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round"/></g>
   <g id="maximize"><rect x="3.5" y="3.5" width="14.5" height="14.5" rx="1.2" fill="none" stroke="currentColor" stroke-width="2.4"/><path d="M7 20.5h12a1.5 1.5 0 0 0 1.5-1.5V7" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round"/></g>
   <g id="close"><path d="m4 4 16 16M20 4 4 20" stroke="currentColor" stroke-width="3" stroke-linecap="round"/></g>
   <g id="fullscreen"><path d="M3 9V4a1 1 0 0 1 1-1h5M15 3h5a1 1 0 0 1 1 1v5M21 15v5a1 1 0 0 1-1 1h-5M9 21H4a1 1 0 0 1-1-1v-5" fill="none" stroke="currentColor" stroke-width="2.8" stroke-linecap="round"/></g>
