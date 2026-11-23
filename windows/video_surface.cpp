@@ -40,10 +40,10 @@ public:
     WindowSubclass(const WindowSubclass&) = delete;
     WindowSubclass& operator=(const WindowSubclass&) = delete;
 
-    bool install(HWND window, VideoSurface* surface)
+    bool install(HWND window, QPointer<VideoSurface> surface)
     {
         reset();
-        if (!window || !surface)
+        if (!window || surface.isNull())
             return false;
 
         state_ = std::make_unique<State>();
@@ -152,7 +152,7 @@ VideoSurface::VideoSurface(QWidget* parent)
     });
 
     const HWND window = reinterpret_cast<HWND>(static_cast<quintptr>(winId()));
-    window_subclass_->install(window, this);
+    window_subclass_->install(window, QPointer<VideoSurface>(this));
     if (!renderer_->initialize(window))
         renderer_.reset();
 }
