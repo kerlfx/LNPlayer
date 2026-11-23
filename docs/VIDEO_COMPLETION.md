@@ -1261,3 +1261,11 @@ Windows UI 的正式完成条件统一由 [`docs/WINDOWS_UI_ACCEPTANCE.md`](WIND
 - [x] Change the D3D11 renderer member to `std::unique_ptr` so ownership and destruction are automatic.
 - [x] Change `MainWindow::video_surface_` to `QPointer<VideoSurface>` because the widget is owned by Qt's parent-child tree.
 - [ ] Windows/MSVC compilation and repeated shutdown validation remain outstanding.
+
+
+### 2026-11-23 — Replace Qt-owned raw member pointers
+
+- [x] Convert `MainWindow` members that refer to Qt-owned widgets, actions, shortcuts and timers to `QPointer` so parent-driven QObject destruction clears the references.
+- [x] Replace the stored `QListWidgetItem*` with `QPersistentModelIndex`; the current playlist selection now follows model row moves without retaining an item pointer.
+- [x] Keep raw pointers only at non-owning API boundaries (opaque C/FFmpeg/D3D11 handles, Win32 handles, callback context storage) where the corresponding owner/lifetime is explicit; do not use them to express C++ ownership.
+- [ ] Windows/MSVC build and runtime validation remain outstanding.
