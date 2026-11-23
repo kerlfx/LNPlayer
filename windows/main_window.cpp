@@ -97,6 +97,7 @@
 #ifdef Q_OS_WIN
 #include <windows.h>
 #include <windowsx.h>
+#include <windowsx.h>
 #endif
 
 namespace
@@ -3142,9 +3143,12 @@ bool MainWindow::nativeEvent(
     if (mode_ == PlayerMode::Video &&
         native_message->message == WM_NCHITTEST && !isFullScreen())
     {
-        const QPoint position(
-            GET_X_LPARAM(native_message->lParam) - geometry().x(),
-            GET_Y_LPARAM(native_message->lParam) - geometry().y());
+        POINT screen_position{
+            GET_X_LPARAM(native_message->lParam),
+            GET_Y_LPARAM(native_message->lParam)};
+        const HWND window = reinterpret_cast<HWND>(static_cast<quintptr>(winId()));
+        ScreenToClient(window, &screen_position);
+        const QPoint position(screen_position.x, screen_position.y);
         if (!isMaximized())
         {
             constexpr int border = 6;
