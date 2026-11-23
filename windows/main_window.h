@@ -15,7 +15,6 @@
 #include <QSet>
 #include <QPointer>
 #include <QPersistentModelIndex>
-#include <QPointer>
 
 #include <vector>
 #include <deque>
@@ -211,11 +210,11 @@ private:
     }
 
     PlayerMode mode_;
-    QLabel* status_label_;
-    QLabel* position_label_;
-    QLabel* media_title_label_;
-    QLineEdit* library_search_;
-    QListWidget* library_list_;
+    QPointer<QLabel> status_label_;
+    QPointer<QLabel> position_label_;
+    QPointer<QLabel> media_title_label_;
+    QPointer<QLineEdit> library_search_;
+    QPointer<QListWidget> library_list_;
     QPointer<QListWidget> playlist_widget_;
     QPointer<QDialog> playlist_dialog_;
     QPointer<VideoSurface> video_surface_;
@@ -227,11 +226,11 @@ private:
     QPointer<QWidget> playlist_panel_;
     QPointer<QAction> playlist_visibility_action_;
     QPointer<QAction> always_on_top_action_;
-    QHash<QString, QShortcut*> shortcuts_;
-    QSlider* seek_slider_;
-    QSlider* volume_slider_;
-    QPushButton* play_button_;
-    QPushButton* stop_button_;
+    QHash<QString, QPointer<QShortcut>> shortcuts_;
+    QPointer<QSlider> seek_slider_;
+    QPointer<QSlider> volume_slider_;
+    QPointer<QPushButton> play_button_;
+    QPointer<QPushButton> stop_button_;
     QPointer<QPushButton> shuffle_button_;
     QPointer<QPushButton> repeat_button_;
     QPointer<QPushButton> playlist_toggle_button_;
@@ -241,12 +240,12 @@ private:
     asio::strand<asio::thread_pool::executor_type> command_executor_;
     asio::strand<asio::thread_pool::executor_type> frame_executor_;
     asio::strand<asio::thread_pool::executor_type> library_executor_;
-    QTimer* snapshot_timer_;
-    QTimer* video_timer_;
-    QTimer* device_timer_;
-    QTimer* fullscreen_hide_timer_;
-    QTimer* osd_timer_;
-    QTimer* volume_settings_timer_;
+    QPointer<QTimer> snapshot_timer_;
+    QPointer<QTimer> video_timer_;
+    QPointer<QTimer> device_timer_;
+    QPointer<QTimer> fullscreen_hide_timer_;
+    QPointer<QTimer> osd_timer_;
+    QPointer<QTimer> volume_settings_timer_;
     std::atomic<lnplayer_t*> player_{nullptr};
     void* video_device_identity_ = nullptr;
     int64_t duration_ms_ = -1;
