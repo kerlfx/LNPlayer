@@ -2086,7 +2086,7 @@ MainWindow::MainWindow(
         control_panel_->setAttribute(Qt::WA_NativeWindow);
         control_panel_->setAttribute(Qt::WA_StyledBackground);
         control_panel_->setAttribute(Qt::WA_OpaquePaintEvent);
-        control_panel_->setAutoFillBackground(true);
+        control_panel_->setAutoFillBackground(false);
         (void)control_panel_->winId();
         control_panel_->setSizePolicy(QSizePolicy::Expanding, QSizePolicy::Fixed);
         control_panel_->setFixedHeight(control_panel_->sizeHint().height());
