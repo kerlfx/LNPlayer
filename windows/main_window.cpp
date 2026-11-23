@@ -616,14 +616,14 @@ MainWindow::MainWindow(
         statusBar()->hide();
 
     auto* file_menu = menuBar()->addMenu(QStringLiteral("文件"));
-    auto* open_action = file_menu->addAction(QStringLiteral("打开文件..."));
+    auto* open_action = file_menu->addAction(PlayerIcons::make(PlayerIcons::Name::OpenFile), QStringLiteral("打开文件..."));
     connect(open_action, &QAction::triggered, this, [this]
     {
         openFile();
     });
     if (mode_ == PlayerMode::Video)
     {
-        auto* open_folder_action = file_menu->addAction(QStringLiteral("打开文件夹..."));
+        auto* open_folder_action = file_menu->addAction(PlayerIcons::make(PlayerIcons::Name::OpenFolder), QStringLiteral("打开文件夹..."));
         connect(open_folder_action, &QAction::triggered, this, [this]
         {
             const QString directory = QFileDialog::getExistingDirectory(
@@ -687,7 +687,7 @@ MainWindow::MainWindow(
     }
     if (mode_ == PlayerMode::Video)
     {
-        auto* subtitle_action = file_menu->addAction(QStringLiteral("加载外挂字幕..."));
+        auto* subtitle_action = file_menu->addAction(PlayerIcons::make(PlayerIcons::Name::Subtitles), QStringLiteral("加载外挂字幕..."));
         connect(subtitle_action, &QAction::triggered, this, [this]
         {
             loadExternalSubtitle();
@@ -1002,7 +1002,7 @@ MainWindow::MainWindow(
                 unavailable->setEnabled(false);
             }
         });
-        auto* load_subtitle_action = subtitle_menu->addAction(QStringLiteral("加载外挂字幕..."));
+        auto* load_subtitle_action = subtitle_menu->addAction(PlayerIcons::make(PlayerIcons::Name::Subtitles), QStringLiteral("加载外挂字幕..."));
         connect(load_subtitle_action, &QAction::triggered, this, [this] { loadExternalSubtitle(); });
         auto* subtitles_enabled_action = subtitle_menu->addAction(QStringLiteral("启用字幕"));
         subtitles_enabled_action->setCheckable(true);
