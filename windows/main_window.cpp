@@ -97,7 +97,6 @@
 #ifdef Q_OS_WIN
 #include <windows.h>
 #include <windowsx.h>
-#include <windowsx.h>
 #endif
 
 namespace
@@ -2873,15 +2872,15 @@ void MainWindow::updateVideoOverlayGeometry()
 
     if (playlist_panel_)
         playlist_panel_->setGeometry(
-            std::max(6, surface_width - playlist_panel_->width() - 6),
-            6, playlist_panel_->width(), std::max(0, surface_height - 12));
+            std::max(0, surface_width - playlist_panel_->width()),
+            0, playlist_panel_->width(), surface_height);
 
     if (control_panel_)
     {
         const int panel_height = control_panel_->sizeHint().height();
         control_panel_->setGeometry(
-            6, std::max(6, surface_height - panel_height - 6),
-            std::max(0, surface_width - 12), panel_height);
+            0, std::max(0, surface_height - panel_height),
+            surface_width, panel_height);
     }
 }
 
@@ -3143,19 +3142,20 @@ bool MainWindow::nativeEvent(
     if (mode_ == PlayerMode::Video &&
         native_message->message == WM_NCHITTEST && !isFullScreen())
     {
-        POINT screen_position{
+        const POINT screen_position{
             GET_X_LPARAM(native_message->lParam),
             GET_Y_LPARAM(native_message->lParam)};
         const HWND window = reinterpret_cast<HWND>(static_cast<quintptr>(winId()));
-        ScreenToClient(window, &screen_position);
+        RECT window_rect{};
+        GetWindowRect(window, &window_rect);
         const QPoint position(screen_position.x, screen_position.y);
         if (!isMaximized())
         {
-            constexpr int border = 6;
-            const bool left = position.x() < border;
-            const bool right = position.x() >= width() - border;
-            const bool top = position.y() < border;
-            const bool bottom = position.y() >= height() - border;
+            constexpr int border = 8;
+            const bool left = screen_position.x < window_rect.left + border;
+            const bool right = screen_position.x >= window_rect.right - border;
+            const bool top = screen_position.y < window_rect.top + border;
+            const bool bottom = screen_position.y >= window_rect.bottom - border;
             if (left || right || top || bottom)
             {
                 if (top && left)
