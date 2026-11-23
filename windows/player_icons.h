@@ -16,7 +16,7 @@ namespace PlayerIcons
 
 enum class Name
 {
-    Play, Pause, Stop, Previous, Next,
+    AppLogo, Play, Pause, Stop, Previous, Next,
     Volume, VolumeMuted, VolumeUp, VolumeDown, AudioEffects, AudioTrack, Subtitles, Language, SubtitleList, AudioTrackList,
     Minimize, Maximize, Restore, Close, Fullscreen, ExitFullscreen,
     Add, Remove, Clear, MoveUp, MoveDown,
@@ -29,6 +29,7 @@ inline const char* resource_id(Name name)
 {
     switch (name)
     {
+    case Name::AppLogo: return "app_logo";
     case Name::Play: return "play";
     case Name::Pause: return "pause";
     case Name::Stop: return "stop";
@@ -69,7 +70,7 @@ inline const char* resource_id(Name name)
     case Name::Keyboard: return "keyboard";
     case Name::Screenshot: return "screenshot";
     case Name::Performance: return "performance";
-    case Name::Folder: return "folder";
+    case Name::Folder: return "open_folder";
     case Name::External: return "external";
     case Name::Reset: return "reset";
     case Name::Playlist: return "playlist";
