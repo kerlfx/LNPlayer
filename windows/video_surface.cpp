@@ -92,9 +92,10 @@ VideoSurface::VideoSurface(QWidget* parent)
 
     renderer_ = new lnplayer::windows::D3D11VideoRenderer();
     const HWND window = reinterpret_cast<HWND>(static_cast<quintptr>(winId()));
-    SetWindowSubclass(
-        window, video_surface_subclass_proc,
-        reinterpret_cast<UINT_PTR>(this), reinterpret_cast<DWORD_PTR>(this));
+    if (SetWindowSubclass(
+            window, video_surface_subclass_proc,
+            reinterpret_cast<UINT_PTR>(this), reinterpret_cast<DWORD_PTR>(this)))
+        native_window_ = window;
     if (!renderer_->initialize(window))
     {
         delete renderer_;
@@ -104,9 +105,18 @@ VideoSurface::VideoSurface(QWidget* parent)
 
 VideoSurface::~VideoSurface()
 {
-    // WM_NCDESTROY removes the subclass when Qt destroys the native HWND.
-    // Do not call winId() here: QWidget teardown may already have destroyed
-    // the native handle, and winId() can recreate it during parent teardown.
+    // Stop callbacks before the QWidget base destructor starts tearing down
+    // the native window. Never call winId() here: it can recreate the HWND.
+    if (native_window_)
+    {
+        const HWND window = static_cast<HWND>(native_window_);
+        if (IsWindow(window))
+            RemoveWindowSubclass(
+                window, video_surface_subclass_proc,
+                reinterpret_cast<UINT_PTR>(this));
+        native_window_ = nullptr;
+    }
+
     delete renderer_;
     renderer_ = nullptr;
 }
