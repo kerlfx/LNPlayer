@@ -96,6 +96,7 @@
 #include <QWidget>
 #ifdef Q_OS_WIN
 #include <windows.h>
+#include <windowsx.h>
 #endif
 
 namespace
@@ -566,7 +567,7 @@ MainWindow::MainWindow(
 
     setStyleSheet(QStringLiteral(
         "QMainWindow, QDialog { background: #171a20; color: #e8eaf0; }"
-        "QMainWindow { border: 1px solid #343a46; }"
+        "QMainWindow { border: 0; }"
         "QWidget#windowTitleBar { background: #191d24; border-bottom: 1px solid #292f39; }"
         "QWidget#windowTitleBar QPushButton { background: transparent; border: 0; "
         "border-radius: 0; padding: 0; min-width: 46px; max-width: 46px; min-height: 36px; max-height: 36px; }"
@@ -2097,8 +2098,8 @@ MainWindow::MainWindow(
         }
         title_bar_->setParent(video_surface_);
         title_bar_->setAttribute(Qt::WA_NativeWindow);
-        title_bar_->setGeometry(6, 6,
-            std::max(0, video_surface_->width() - 12), title_bar_->sizeHint().height());
+        title_bar_->setGeometry(0, 0,
+            video_surface_->width(), title_bar_->sizeHint().height());
         title_bar_->hide();
         title_bar_->raise();
     }
@@ -2867,7 +2868,7 @@ void MainWindow::updateVideoOverlayGeometry()
 
     if (title_bar_)
         title_bar_->setGeometry(
-            6, 6, std::max(0, surface_width - 12), title_bar_->sizeHint().height());
+            0, 0, surface_width, title_bar_->sizeHint().height());
 
     if (playlist_panel_)
         playlist_panel_->setGeometry(
@@ -3141,7 +3142,9 @@ bool MainWindow::nativeEvent(
     if (mode_ == PlayerMode::Video &&
         native_message->message == WM_NCHITTEST && !isFullScreen())
     {
-        const QPoint position = mapFromGlobal(QCursor::pos());
+        const QPoint position(
+            GET_X_LPARAM(native_message->lParam) - geometry().x(),
+            GET_Y_LPARAM(native_message->lParam) - geometry().y());
         if (!isMaximized())
         {
             constexpr int border = 6;
