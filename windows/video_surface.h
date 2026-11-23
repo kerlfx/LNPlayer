@@ -21,6 +21,8 @@ namespace lnplayer::windows
 class D3D11VideoRenderer;
 }
 
+class WindowSubclass;
+
 class VideoSurface final : public QWidget
 {
 public:
@@ -67,8 +69,8 @@ protected:
 private:
     QImage frame_;
     mutable std::mutex frame_mutex_;
-    lnplayer::windows::D3D11VideoRenderer* renderer_ = nullptr;
-    void* native_window_ = nullptr;
+    std::unique_ptr<lnplayer::windows::D3D11VideoRenderer> renderer_;
+    std::unique_ptr<WindowSubclass> window_subclass_;
     bool stretch_ = false;
     float aspect_ratio_ = 0.0f;
     float source_aspect_ratio_ = 0.0f;
