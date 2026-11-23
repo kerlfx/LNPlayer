@@ -560,11 +560,11 @@ void MainWindow::rebuildPlaylistWidget()
         if (!playlist_video_metadata_.contains(path))
             schedulePlaylistMetadataProbe(path);
     }
-    playing_playlist_item_ = nullptr;
+    playing_playlist_item_ = QPersistentModelIndex{};
     if (playlist_index_ >= 0 && playlist_index_ < playlist_.size())
     {
         playlist_widget_->setCurrentRow(playlist_index_);
-        playing_playlist_item_ = playlist_widget_->item(playlist_index_);
+        playing_playlist_item_ = playlist_widget_->model()->index(playlist_index_, 0);
     }
     playlist_widget_->setUpdatesEnabled(true);
     playlist_widget_->viewport()->update();
@@ -1054,7 +1054,7 @@ void MainWindow::openPlaylistIndex(int index)
     if (playlist_widget_)
     {
         playlist_widget_->setCurrentRow(index);
-        playing_playlist_item_ = playlist_widget_->item(index);
+        playing_playlist_item_ = playlist_widget_->model()->index(index, 0);
     }
 
     const QString source = playlist_[index].toLocalFile();
