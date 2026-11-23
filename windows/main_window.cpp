@@ -2996,55 +2996,69 @@ bool MainWindow::eventFilter(QObject* watched, QEvent* event)
             if (!QApplication::activePopupWidget() && fullscreen_hide_delay_ms_ > 0)
                 fullscreen_hide_timer_->start(fullscreen_hide_delay_ms_);
         }
-        else if (event->type() == QEvent::MouseMove)
+        else if (event->type() == QEvent::MouseMove &&
+                 (is_control_widget || watched == video_surface_))
         {
-            if (is_control_widget)
+            unsetCursor();
+            const QPoint position = video_surface_->mapFromGlobal(QCursor::pos());
+            constexpr int reveal_zone = 48;
+            const bool near_right_edge =
+                position.x() >= video_surface_->width() - reveal_zone;
+            const bool near_top_edge = position.y() <= reveal_zone;
+            const bool near_bottom_edge =
+                position.y() >= video_surface_->height() - reveal_zone;
+
+            QWidget* target_panel = nullptr;
+            if (near_right_edge && playlist_panel_visible_)
+                target_panel = playlist_panel_;
+            else if (near_top_edge)
+                target_panel = title_bar_;
+            else if (near_bottom_edge)
+                target_panel = control_panel_;
+
+            QWidget* active_panel = nullptr;
+            if (title_bar_ && title_bar_->isVisible())
+                active_panel = title_bar_;
+            else if (playlist_panel_ && playlist_panel_->isVisible())
+                active_panel = playlist_panel_;
+            else if (control_panel_ && control_panel_->isVisible())
+                active_panel = control_panel_;
+
+            if (target_panel && target_panel != active_panel)
             {
-                unsetCursor();
+                const QRect overlay_geometry = active_panel
+                    ? active_panel->geometry()
+                    : QRect();
+
+                if (title_bar_ && title_bar_ != target_panel)
+                    title_bar_->hide();
+                if (playlist_panel_ && playlist_panel_ != target_panel)
+                    playlist_panel_->hide();
+                if (control_panel_ && control_panel_ != target_panel)
+                    control_panel_->hide();
+
+                if (active_panel)
+                    target_panel->setGeometry(overlay_geometry);
+                else
+                {
+                    updateVideoOverlayGeometry();
+                }
+
+                target_panel->show();
+                target_panel->raise();
+                if (fullscreen_hide_delay_ms_ > 0)
+                    fullscreen_hide_timer_->start(fullscreen_hide_delay_ms_);
+                else
+                    fullscreen_hide_timer_->stop();
+            }
+            else if (active_panel)
+            {
                 fullscreen_hide_timer_->stop();
             }
-            else if (watched == video_surface_)
+            else if (fullscreen_hide_delay_ms_ > 0 &&
+                     !fullscreen_hide_timer_->isActive())
             {
-                const QPoint position = static_cast<QMouseEvent*>(event)->position().toPoint();
-                constexpr int reveal_zone = 48;
-                const bool near_right_edge =
-                    position.x() >= video_surface_->width() - reveal_zone;
-                const bool near_top_edge = position.y() <= reveal_zone;
-                const bool near_bottom_edge =
-                    position.y() >= video_surface_->height() - reveal_zone;
-
-                const bool title_panel_visible = title_bar_ && title_bar_->isVisible();
-                const bool playlist_panel_is_visible =
-                    playlist_panel_ && playlist_panel_->isVisible();
-                const bool control_panel_visible =
-                    control_panel_ && control_panel_->isVisible();
-                const bool has_visible_overlay =
-                    title_panel_visible || playlist_panel_is_visible || control_panel_visible;
-
-                // An active overlay owns the reveal interaction until it hides.
-                // Moving across another edge must not switch panels or stack overlays.
-                if (!has_visible_overlay)
-                {
-                    QWidget* target_panel = nullptr;
-                    if (near_right_edge && playlist_panel_visible_)
-                        target_panel = playlist_panel_;
-                    else if (near_top_edge)
-                        target_panel = title_bar_;
-                    else if (near_bottom_edge)
-                        target_panel = control_panel_;
-
-                    if (target_panel)
-                    {
-                        unsetCursor();
-                        updateVideoOverlayGeometry();
-                        target_panel->show();
-                        target_panel->raise();
-                        if (fullscreen_hide_delay_ms_ > 0)
-                            fullscreen_hide_timer_->start(fullscreen_hide_delay_ms_);
-                        else
-                            fullscreen_hide_timer_->stop();
-                    }
-                }
+                fullscreen_hide_timer_->start(fullscreen_hide_delay_ms_);
             }
         }
         else if (event->type() == QEvent::Enter && is_control_widget)
