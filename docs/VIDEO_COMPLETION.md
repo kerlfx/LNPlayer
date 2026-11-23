@@ -1269,3 +1269,12 @@ Windows UI 的正式完成条件统一由 [`docs/WINDOWS_UI_ACCEPTANCE.md`](WIND
 - [x] Replace the stored `QListWidgetItem*` with `QPersistentModelIndex`; the current playlist selection now follows model row moves without retaining an item pointer.
 - [x] Keep raw pointers only at non-owning API boundaries (opaque C/FFmpeg/D3D11 handles, Win32 handles, callback context storage) where the corresponding owner/lifetime is explicit; do not use them to express C++ ownership.
 - [ ] Windows/MSVC build and runtime validation remain outstanding.
+
+
+### 2026-11-23 — Complete Qt object reference audit
+
+- [x] Convert the remaining `MainWindow` members that reference Qt-owned widgets, timers, actions and shortcuts to `QPointer`; QObject destruction now clears those references automatically.
+- [x] Replace both stored playlist-item pointers and the playlist path-to-item pointer index with `QPersistentModelIndex` values. Metadata updates now write through the item model.
+- [x] `VideoSurface` uses default destruction; member declaration order releases the RAII window-subclass helper before the renderer and before `QWidget` base teardown.
+- [ ] Remaining raw pointer-shaped values are limited to C API handles, opaque D3D/FFmpeg resource handles whose lifetime is paired with an owner, Win32 handles, and the Win32 callback-context bridge encapsulated inside `WindowSubclass`. These are non-owning API boundaries, not C++ ownership fields.
+- [ ] Static source review only; Windows/MSVC compilation and runtime shutdown tests remain outstanding.
