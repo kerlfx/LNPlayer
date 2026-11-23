@@ -1301,3 +1301,11 @@ Windows UI 的正式完成条件统一由 [`docs/WINDOWS_UI_ACCEPTANCE.md`](WIND
 - 统一 24×24 画布、线条端点/连接圆角、轮廓比例和实心播放控制符号；提高上一项/下一项、音量、音轨、字幕等图标在 20px 显示尺寸下的辨识度。
 - 保留现有 35 个 SVG ID、`currentColor` 和调用接口，不改变功能映射。
 - 本次仅更新 SVG 源资源；尚未执行 Windows/MSVC 构建、CTest 或界面实机验收。
+
+### 2026-11-23 — 图标改为外部文件加载
+
+- `PlayerIcons::svg_data()` 从程序目录下的 `ui/player_icons.svg` 读取 SVG，不再依赖 Qt 资源路径。
+- CMake 在构建后将 `windows/resources/player_icons.svg` 复制到可执行文件旁的 `ui/` 目录；安装规则也会部署该文件。
+- 图标设计资源与程序二进制解耦。替换外部 SVG 后，重新启动播放器即可载入新设计，无需重新编译；当前进程仍缓存首次读取的 SVG 数据。
+- 运行目录结构：`LNPlayer.exe`、`ui/player_icons.svg`。
+- 本次未执行 Windows/MSVC 构建或运行验收。
