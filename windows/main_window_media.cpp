@@ -760,7 +760,7 @@ void MainWindow::clearPlaylist()
     playlist_index_ = -1;
     current_media_path_.clear();
     shuffle_order_.clear();
-    playing_playlist_item_ = nullptr;
+    playing_playlist_item_ = QPersistentModelIndex{};
     playlist_open_pending_ = false;
     video_seek_pending_ = false;
     video_end_of_stream_ = false;
