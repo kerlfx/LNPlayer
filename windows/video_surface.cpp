@@ -26,6 +26,7 @@
 namespace
 {
 constexpr int kWindowResizeBorder = 6;
+}
 
 class WindowSubclass final
 {
@@ -112,7 +113,6 @@ private:
 
     std::unique_ptr<State> state_;
 };
-}
 
 VideoSurface::VideoSurface(QWidget* parent)
     : QWidget(parent),
