@@ -3024,7 +3024,16 @@ bool MainWindow::eventFilter(QObject* watched, QEvent* event)
             else if (control_panel_ && control_panel_->isVisible())
                 active_panel = control_panel_;
 
-            if (target_panel && target_panel != active_panel)
+            const bool pointer_over_active_panel =
+                active_panel && active_panel->geometry().contains(position);
+
+            // A visible panel owns its entire hit area. Its own covered edge zone
+            // must not be interpreted as another panel's reveal trigger.
+            if (pointer_over_active_panel)
+            {
+                fullscreen_hide_timer_->stop();
+            }
+            else if (target_panel && target_panel != active_panel)
             {
                 const QRect overlay_geometry = active_panel
                     ? active_panel->geometry()
@@ -3040,9 +3049,7 @@ bool MainWindow::eventFilter(QObject* watched, QEvent* event)
                 if (active_panel)
                     target_panel->setGeometry(overlay_geometry);
                 else
-                {
                     updateVideoOverlayGeometry();
-                }
 
                 target_panel->show();
                 target_panel->raise();
