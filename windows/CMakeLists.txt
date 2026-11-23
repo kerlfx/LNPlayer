@@ -25,6 +25,17 @@ set_target_properties(LNPlayerApp PROPERTIES
     OUTPUT_NAME "LNPlayer"
 )
 
+file(GLOB LNPLAYER_FFMPEG_DLLS CONFIGURE_DEPENDS
+    "${LNPLAYER_FFMPEG_ROOT}/bin/*.dll"
+)
+
+configure_file(
+    "${CMAKE_CURRENT_SOURCE_DIR}/LNPlayer.rc.in"
+    "${CMAKE_CURRENT_BINARY_DIR}/LNPlayer.rc"
+    @ONLY
+)
+target_sources(LNPlayerApp PRIVATE "${CMAKE_CURRENT_BINARY_DIR}/LNPlayer.rc")
+
 # Deploy non-Qt runtime assets as file outputs. CMake reruns these copy
 # commands only when a source runtime file changes or an output is missing.
 set(LNPLAYER_UI_ASSET_DIR "${CMAKE_CURRENT_SOURCE_DIR}/../ui")
