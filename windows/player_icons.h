@@ -17,12 +17,12 @@ namespace PlayerIcons
 enum class Name
 {
     Play, Pause, Stop, Previous, Next,
-    Volume, VolumeMuted, AudioTrack, Subtitles,
-    Minimize, Maximize, Restore, Close,
+    Volume, VolumeMuted, VolumeUp, VolumeDown, AudioEffects, AudioTrack, Subtitles, Language, SubtitleList, AudioTrackList,
+    Minimize, Maximize, Restore, Close, Fullscreen, ExitFullscreen,
     Add, Remove, Clear, MoveUp, MoveDown,
-    Shuffle, Repeat, RepeatOne, Search,
+    Shuffle, Repeat, RepeatOne, History, Search,
     Settings, General, Playback, Interface, Video, Filters, Keyboard, Screenshot, Performance,
-    Folder, External, Reset, Playlist
+    Folder, External, Reset, Playlist, Menu, About, Help, More, OpenFile, OpenFolder, Download, Delete, Properties, PictureInPicture, Lock, Hide, NightMode
 };
 
 inline const char* resource_id(Name name)
@@ -36,12 +36,20 @@ inline const char* resource_id(Name name)
     case Name::Next: return "next";
     case Name::Volume: return "volume";
     case Name::VolumeMuted: return "volume_muted";
+    case Name::VolumeUp: return "volume_up";
+    case Name::VolumeDown: return "volume_down";
+    case Name::AudioEffects: return "audio_effects";
+    case Name::Language: return "language";
+    case Name::SubtitleList: return "subtitle_list";
     case Name::AudioTrack: return "audio_track";
     case Name::Subtitles: return "subtitles";
+    case Name::AudioTrackList: return "audio_track_list";
     case Name::Minimize: return "minimize";
     case Name::Maximize: return "maximize";
     case Name::Restore: return "restore";
     case Name::Close: return "close";
+    case Name::Fullscreen: return "fullscreen";
+    case Name::ExitFullscreen: return "exit_fullscreen";
     case Name::Add: return "add";
     case Name::Remove: return "remove";
     case Name::Clear: return "clear";
@@ -50,6 +58,7 @@ inline const char* resource_id(Name name)
     case Name::Shuffle: return "shuffle";
     case Name::Repeat: return "repeat";
     case Name::RepeatOne: return "repeat_one";
+    case Name::History: return "history";
     case Name::Search: return "search";
     case Name::Settings: return "settings";
     case Name::General: return "general";
@@ -64,6 +73,19 @@ inline const char* resource_id(Name name)
     case Name::External: return "external";
     case Name::Reset: return "reset";
     case Name::Playlist: return "playlist";
+    case Name::Menu: return "menu";
+    case Name::About: return "about";
+    case Name::Help: return "help";
+    case Name::More: return "more";
+    case Name::OpenFile: return "open_file";
+    case Name::OpenFolder: return "open_folder";
+    case Name::Download: return "download";
+    case Name::Delete: return "delete";
+    case Name::Properties: return "properties";
+    case Name::PictureInPicture: return "picture_in_picture";
+    case Name::Lock: return "lock";
+    case Name::Hide: return "hide";
+    case Name::NightMode: return "night_mode";
     }
     return "play";
 }
