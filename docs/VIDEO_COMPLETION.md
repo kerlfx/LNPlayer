@@ -1252,3 +1252,12 @@ Windows UI 的正式完成条件统一由 [`docs/WINDOWS_UI_ACCEPTANCE.md`](WIND
 - Remove the subclass in `VideoSurface::~VideoSurface()` before `QWidget` base teardown begins, preventing the callback's raw `VideoSurface*` reference from outliving the derived object.
 - Keep the `WM_NCDESTROY` self-removal path for native-window destruction that occurs while the widget is still alive.
 - Windows/MSVC build and shutdown validation are still required.
+
+
+### 2026-11-23 — VideoSurface RAII ownership and weak widget reference
+
+- [x] Encapsulate Win32 window subclass registration in a non-copyable RAII helper. Its callback context is owned by the helper and references `VideoSurface` through `QPointer`, not a retained raw widget pointer.
+- [x] Remove the subclass before `QWidget` base teardown without reacquiring the HWND; `WM_NCDESTROY` clears the stored handle and removes the callback.
+- [x] Change the D3D11 renderer member to `std::unique_ptr` so ownership and destruction are automatic.
+- [x] Change `MainWindow::video_surface_` to `QPointer<VideoSurface>` because the widget is owned by Qt's parent-child tree.
+- [ ] Windows/MSVC compilation and repeated shutdown validation remain outstanding.
