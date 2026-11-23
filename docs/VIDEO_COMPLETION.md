@@ -1236,3 +1236,12 @@ Windows UI 的正式完成条件统一由 [`docs/WINDOWS_UI_ACCEPTANCE.md`](WIND
 - VideoSurface 仍保留 D3D11 原生 HWND；标题栏、播放列表和底栏作为其原生子窗口，以保证覆盖层位于 D3D11 画面上方。
 - [ ] Windows/MSVC 构建与实机验收尚未执行；重点验证标题栏/播放列表/底栏唤出和自动隐藏、控件点击、四边四角缩放、最大化/全屏，以及不同 DPI 下覆盖层位置。
 - [ ] 本次只完成源码静态回读，未运行构建、CTest 或 CI。
+
+
+### 2026-11-23 — VideoSurface 原生窗口析构路径修正
+
+- [x] 移除 `VideoSurface::~VideoSurface()` 中重复的 `RemoveWindowSubclass()` 调用。子类化回调已在 `WM_NCDESTROY` 中自行移除，不需要在析构函数再次操作 HWND。
+- [x] 析构函数不再调用 `winId()`。父窗口销毁过程中，Qt 可能已经销毁子控件的原生窗口；此时调用 `winId()` 可能触发原生窗口重新创建，干扰 QWidget 原生窗口销毁顺序。
+- [x] 清除本轮临时 centralContent / VideoSurface 诊断输出，保留既有 MainWindow 销毁跟踪日志。
+- [ ] 该问题属于源码审查发现的生命周期风险，尚不能仅凭静态分析确认它就是 `0xC00000FD` 的唯一根因。
+- [ ] 需要 Windows/MSVC 重新构建并反复关闭窗口验证；未运行构建、CTest 或 CI。
