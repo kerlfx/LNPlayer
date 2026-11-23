@@ -14,6 +14,8 @@
 #include <QHash>
 #include <QSet>
 #include <QPointer>
+#include <QPersistentModelIndex>
+#include <QPointer>
 
 #include <vector>
 #include <deque>
@@ -214,25 +216,25 @@ private:
     QLabel* media_title_label_;
     QLineEdit* library_search_;
     QListWidget* library_list_;
-    QListWidget* playlist_widget_ = nullptr;
-    QDialog* playlist_dialog_ = nullptr;
+    QPointer<QListWidget> playlist_widget_;
+    QPointer<QDialog> playlist_dialog_;
     QPointer<VideoSurface> video_surface_;
-    QWidget* control_panel_ = nullptr;
-    QWidget* title_bar_ = nullptr;
-    QMenuBar* menu_bar_ = nullptr;
-    QLabel* osd_label_ = nullptr;
-    QLabel* empty_state_label_ = nullptr;
-    QWidget* playlist_panel_ = nullptr;
-    QAction* playlist_visibility_action_ = nullptr;
-    QAction* always_on_top_action_ = nullptr;
+    QPointer<QWidget> control_panel_;
+    QPointer<QWidget> title_bar_;
+    QPointer<QMenuBar> menu_bar_;
+    QPointer<QLabel> osd_label_;
+    QPointer<QLabel> empty_state_label_;
+    QPointer<QWidget> playlist_panel_;
+    QPointer<QAction> playlist_visibility_action_;
+    QPointer<QAction> always_on_top_action_;
     QHash<QString, QShortcut*> shortcuts_;
     QSlider* seek_slider_;
     QSlider* volume_slider_;
     QPushButton* play_button_;
     QPushButton* stop_button_;
-    QPushButton* shuffle_button_ = nullptr;
-    QPushButton* repeat_button_ = nullptr;
-    QPushButton* playlist_toggle_button_ = nullptr;
+    QPointer<QPushButton> shuffle_button_;
+    QPointer<QPushButton> repeat_button_;
+    QPointer<QPushButton> playlist_toggle_button_;
     std::shared_ptr<UiTaskTracker> task_tracker_;
     asio::strand<asio::io_context::executor_type> dispatch_executor_;
     asio::thread_pool::executor_type background_executor_;
@@ -328,7 +330,7 @@ private:
     int playlist_index_ = -1;
     uint64_t playlist_operation_generation_ = 0;
     QString current_media_path_;
-    QListWidgetItem* playing_playlist_item_ = nullptr;
+    QPersistentModelIndex playing_playlist_item_;
     QMultiHash<QString, QListWidgetItem*> playlist_item_index_;
     bool playlist_open_pending_ = false;
     bool subtitles_enabled_ = true;
