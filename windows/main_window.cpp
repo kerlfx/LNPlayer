@@ -3148,7 +3148,9 @@ bool MainWindow::nativeEvent(
         const HWND window = reinterpret_cast<HWND>(static_cast<quintptr>(winId()));
         RECT window_rect{};
         GetWindowRect(window, &window_rect);
-        const QPoint position(screen_position.x, screen_position.y);
+        POINT client_position = screen_position;
+        ScreenToClient(window, &client_position);
+        const QPoint position(client_position.x, client_position.y);
         if (!isMaximized())
         {
             constexpr int border = 8;
