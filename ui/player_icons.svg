@@ -1,5 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24">
+  <defs><linearGradient id="brandGradient" x1="0" y1="0" x2="1" y2="1"><stop offset="0" stop-color="#48c8f4"/><stop offset="1" stop-color="#6558ed"/></linearGradient></defs>
+  <g id="app_logo"><path fill="url(#brandGradient)" d="M4.2 1.8a3 3 0 0 0-4.1 2.8v14.8a3 3 0 0 0 4.5 2.6l15.1-8.5a3 3 0 0 0 0-5.2L4.2 1.8Z"/><path fill="#101b2b" d="M8 6.7a1 1 0 0 0-1.5.9v8.8a1 1 0 0 0 1.5.9l7.4-4.4a1 1 0 0 0 0-1.8L8 6.7Z"/></g>
   <g id="play"><path fill="currentColor" d="M6.2 3.5a1.7 1.7 0 0 0-2.6 1.45v14.1a1.7 1.7 0 0 0 2.6 1.45l12-7.05a1.7 1.7 0 0 0 0-2.9L6.2 3.5Z"/></g>
   <g id="pause"><rect fill="currentColor" x="4" y="3.2" width="5.8" height="17.6" rx="1.8"/><rect fill="currentColor" x="14.2" y="3.2" width="5.8" height="17.6" rx="1.8"/></g>
   <g id="stop"><rect fill="currentColor" x="3.5" y="3.5" width="17" height="17" rx="2.1"/></g>
