@@ -1286,3 +1286,11 @@ Windows UI 的正式完成条件统一由 [`docs/WINDOWS_UI_ACCEPTANCE.md`](WIND
 - 标题栏、播放列表侧栏、底部控制栏采用互斥显示，避免同时占据视频画面。
 - 边缘唤出范围从 14px 扩大至 48px；鼠标离开当前覆盖层后恢复自动隐藏计时，进入其他边缘时切换面板。
 - 尚未执行 Windows/MSVC 构建和运行验收。
+
+
+### 2026-11-23 — SVG 图标第一版设计
+
+- 重绘 `windows/resources/player_icons.svg`，保留现有 35 个图标 ID，避免影响 `PlayerIcons::Name` 与 UI 调用点。
+- 第一版采用统一 24×24 viewBox、圆角线性图形与实心播放控制符号；颜色继续由 `currentColor` 驱动，兼容现有 Normal/Active 图标着色。
+- 本轮仅建立第一版视觉基线，后续按播放器实际 20px/24px 显示效果逐组微调图形比例、光学居中和辨识度。
+- 未运行 Windows/MSVC 构建、CTest 或 CI；需在实际界面检查小尺寸清晰度及 QSvgRenderer 对各图层的呈现。
