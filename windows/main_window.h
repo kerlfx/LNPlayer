@@ -13,6 +13,7 @@
 #include <QUrl>
 #include <QHash>
 #include <QSet>
+#include <QPointer>
 
 #include <vector>
 #include <deque>
@@ -215,7 +216,7 @@ private:
     QListWidget* library_list_;
     QListWidget* playlist_widget_ = nullptr;
     QDialog* playlist_dialog_ = nullptr;
-    VideoSurface* video_surface_ = nullptr;
+    QPointer<VideoSurface> video_surface_;
     QWidget* control_panel_ = nullptr;
     QWidget* title_bar_ = nullptr;
     QMenuBar* menu_bar_ = nullptr;
