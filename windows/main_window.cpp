@@ -1387,8 +1387,8 @@ MainWindow::MainWindow(
                     reordered.append(QUrl::fromLocalFile(path));
                 }
                 playlist_ = std::move(reordered);
-                playlist_index_ = playing_playlist_item_
-                    ? playlist_widget_->row(playing_playlist_item_)
+                playlist_index_ = playing_playlist_item_.isValid()
+                    ? playing_playlist_item_.row()
                     : -1;
                 if (playlist_index_ >= 0)
                     playlist_widget_->setCurrentRow(playlist_index_);
