@@ -2,6 +2,7 @@
 
 #include <QByteArray>
 #include <QColor>
+#include <QCoreApplication>
 #include <QFile>
 #include <QIcon>
 #include <QPainter>
@@ -71,7 +72,7 @@ inline const QByteArray& svg_data()
 {
     static const QByteArray data = []
     {
-        QFile file(QStringLiteral(":/icons/player_icons.svg"));
+        QFile file(QCoreApplication::applicationDirPath() + QStringLiteral("/ui/player_icons.svg"));
         if (!file.open(QIODevice::ReadOnly))
             return QByteArray{};
         return file.readAll();
