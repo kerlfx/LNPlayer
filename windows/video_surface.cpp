@@ -17,6 +17,7 @@
 #include <QWheelEvent>
 #include <QApplication>
 #include <QCursor>
+#include <QPointer>
 
 #include <algorithm>
 #include <utility>
@@ -26,37 +27,97 @@ namespace
 {
 constexpr int kWindowResizeBorder = 6;
 
-LRESULT CALLBACK video_surface_subclass_proc(
-    HWND window, UINT message, WPARAM wparam, LPARAM lparam,
-    UINT_PTR subclass_id, DWORD_PTR reference_data)
+class WindowSubclass final
 {
-    auto* surface = reinterpret_cast<VideoSurface*>(reference_data);
-    if (message == WM_NCHITTEST && surface)
+public:
+    ~WindowSubclass()
     {
-        QWidget* top_level = surface->window();
-        if (top_level && !top_level->isMaximized() && !top_level->isFullScreen())
-        {
-            const QPoint position = top_level->mapFromGlobal(QCursor::pos());
-            const bool on_edge = position.x() < kWindowResizeBorder ||
-                position.y() < kWindowResizeBorder ||
-                position.x() >= top_level->width() - kWindowResizeBorder ||
-                position.y() >= top_level->height() - kWindowResizeBorder;
-            if (on_edge)
-                return HTTRANSPARENT;
-        }
+        reset();
     }
 
-    if (message == WM_NCDESTROY)
+    WindowSubclass() = default;
+    WindowSubclass(const WindowSubclass&) = delete;
+    WindowSubclass& operator=(const WindowSubclass&) = delete;
+
+    bool install(HWND window, VideoSurface* surface)
     {
-        RemoveWindowSubclass(window, video_surface_subclass_proc, subclass_id);
+        reset();
+        if (!window || !surface)
+            return false;
+
+        state_ = std::make_unique<State>();
+        state_->window = window;
+        state_->surface = surface;
+        if (!SetWindowSubclass(
+                window, &WindowSubclass::procedure,
+                reinterpret_cast<UINT_PTR>(this),
+                reinterpret_cast<DWORD_PTR>(state_.get())))
+        {
+            state_.reset();
+            return false;
+        }
+        return true;
+    }
+
+    void reset()
+    {
+        if (!state_)
+            return;
+
+        if (state_->window && IsWindow(state_->window))
+            RemoveWindowSubclass(
+                state_->window, &WindowSubclass::procedure,
+                reinterpret_cast<UINT_PTR>(this));
+        state_.reset();
+    }
+
+private:
+    struct State
+    {
+        HWND window = nullptr;
+        QPointer<VideoSurface> surface;
+    };
+
+    static LRESULT CALLBACK procedure(
+        HWND window, UINT message, WPARAM wparam, LPARAM lparam,
+        UINT_PTR subclass_id, DWORD_PTR reference_data)
+    {
+        auto* state = reinterpret_cast<State*>(reference_data);
+        if (message == WM_NCHITTEST && state)
+        {
+            if (VideoSurface* surface = state->surface.data())
+            {
+                QWidget* top_level = surface->window();
+                if (top_level && !top_level->isMaximized() && !top_level->isFullScreen())
+                {
+                    const QPoint position = top_level->mapFromGlobal(QCursor::pos());
+                    const bool on_edge = position.x() < kWindowResizeBorder ||
+                        position.y() < kWindowResizeBorder ||
+                        position.x() >= top_level->width() - kWindowResizeBorder ||
+                        position.y() >= top_level->height() - kWindowResizeBorder;
+                    if (on_edge)
+                        return HTTRANSPARENT;
+                }
+            }
+        }
+
+        if (message == WM_NCDESTROY)
+        {
+            RemoveWindowSubclass(window, &WindowSubclass::procedure, subclass_id);
+            if (state)
+                state->window = nullptr;
+        }
         return DefSubclassProc(window, message, wparam, lparam);
     }
-    return DefSubclassProc(window, message, wparam, lparam);
-}
+
+    std::unique_ptr<State> state_;
+};
 }
 
 VideoSurface::VideoSurface(QWidget* parent)
-    : QWidget(parent)
+    : QWidget(parent),
+      renderer_(std::make_unique<lnplayer::windows::D3D11VideoRenderer>()),
+      window_subclass_(std::make_unique<WindowSubclass>())
 {
     setMinimumSize(160, 90);
     setAttribute(Qt::WA_NativeWindow);
@@ -90,35 +151,17 @@ VideoSurface::VideoSurface(QWidget* parent)
                 frame.constBits(), frame.width(), frame.height(), frame.bytesPerLine());
     });
 
-    renderer_ = new lnplayer::windows::D3D11VideoRenderer();
     const HWND window = reinterpret_cast<HWND>(static_cast<quintptr>(winId()));
-    if (SetWindowSubclass(
-            window, video_surface_subclass_proc,
-            reinterpret_cast<UINT_PTR>(this), reinterpret_cast<DWORD_PTR>(this)))
-        native_window_ = window;
+    window_subclass_->install(window, this);
     if (!renderer_->initialize(window))
-    {
-        delete renderer_;
-        renderer_ = nullptr;
-    }
+        renderer_.reset();
 }
 
 VideoSurface::~VideoSurface()
 {
-    // Stop callbacks before the QWidget base destructor starts tearing down
-    // the native window. Never call winId() here: it can recreate the HWND.
-    if (native_window_)
-    {
-        const HWND window = static_cast<HWND>(native_window_);
-        if (IsWindow(window))
-            RemoveWindowSubclass(
-                window, video_surface_subclass_proc,
-                reinterpret_cast<UINT_PTR>(this));
-        native_window_ = nullptr;
-    }
-
-    delete renderer_;
-    renderer_ = nullptr;
+    // The subclass owns its callback context and is removed before QWidget
+    // starts native-window teardown. The renderer is released automatically.
+    window_subclass_->reset();
 }
 
 void VideoSurface::set_frame(const QImage& frame)
