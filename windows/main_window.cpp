@@ -3001,19 +3001,17 @@ bool MainWindow::eventFilter(QObject* watched, QEvent* event)
         {
             unsetCursor();
             const QPoint position = video_surface_->mapFromGlobal(QCursor::pos());
-            constexpr int reveal_zone = 48;
-            const bool near_right_edge =
-                position.x() >= video_surface_->width() - reveal_zone;
-            const bool near_top_edge = position.y() <= reveal_zone;
-            const bool near_bottom_edge =
-                position.y() >= video_surface_->height() - reveal_zone;
+            updateVideoOverlayGeometry();
 
+            // Each panel's reveal hit area is exactly its own display geometry.
+            // No independent edge strip or secondary boundary calculation.
             QWidget* target_panel = nullptr;
-            if (near_right_edge && playlist_panel_visible_)
+            if (playlist_panel_visible_ && playlist_panel_ &&
+                playlist_panel_->geometry().contains(position))
                 target_panel = playlist_panel_;
-            else if (near_top_edge)
+            else if (title_bar_ && title_bar_->geometry().contains(position))
                 target_panel = title_bar_;
-            else if (near_bottom_edge)
+            else if (control_panel_ && control_panel_->geometry().contains(position))
                 target_panel = control_panel_;
 
             QWidget* active_panel = nullptr;
@@ -3035,21 +3033,12 @@ bool MainWindow::eventFilter(QObject* watched, QEvent* event)
             }
             else if (target_panel && target_panel != active_panel)
             {
-                const QRect overlay_geometry = active_panel
-                    ? active_panel->geometry()
-                    : QRect();
-
                 if (title_bar_ && title_bar_ != target_panel)
                     title_bar_->hide();
                 if (playlist_panel_ && playlist_panel_ != target_panel)
                     playlist_panel_->hide();
                 if (control_panel_ && control_panel_ != target_panel)
                     control_panel_->hide();
-
-                if (active_panel)
-                    target_panel->setGeometry(overlay_geometry);
-                else
-                    updateVideoOverlayGeometry();
 
                 target_panel->show();
                 target_panel->raise();
